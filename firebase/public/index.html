@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AppointmentPro - Agendamentos Online</title>
+    <title>TimeWise - Agendamentos Inteligentes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -14,7 +14,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'dark-bg': '#000000',
+                        'dark-bg': '#000000', // Preto escuro forte
                         'primary': '#b47a17',
                         'secondary': '#4A4A4A',
                         'accent': '#FFD700',
@@ -27,13 +27,11 @@
     </script>
 </head>
 <body class="bg-dark-bg text-text-light">
-    <!-- Header -->
     <nav class="bg-secondary p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-primary text-2xl font-bold flex items-center">
-                <i class="fas fa-calendar-check mr-2"></i>TimeWise
+                <i class="fas fa-clock mr-2"></i>TimeWise
             </h1>
-
             <div id="userProfile" class="text-text-light hidden">
                 <div class="relative">
                     <button id="userDropdown" class="flex items-center space-x-2 focus:outline-none">
@@ -42,49 +40,176 @@
                         <i class="fas fa-chevron-down text-text-light ml-2"></i>
                     </button>
                     <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-secondary rounded-md shadow-lg hidden">
-                        <a href="page/appointments.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Meus Agendamentos</a>
-                        <a href="page/profile.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Perfil</a>
+                        <a href="page/Agendamentos.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Agendamentos</a>
+                        <a href="page/Perfil.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Perfil</a>
+                        <a href="page/pre.101.1.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Agendar</a>
                         <a href="#" id="logoutButton" class="block px-4 py-2 text-sm text-text-light hover:bg-primary">Sair</a>
                     </div>
                 </div>
             </div>
-
-            <div id="authButtons" class="text-text-light hidden">
-                <a href="page/login.html" class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-6 rounded-full transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
+            <div id="authButtons" class="text-text-light">
+                <a href="page/LoginTimeWise.html" class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-6 rounded-full transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
                     <i class="fas fa-sign-in-alt mr-2"></i>Login
                 </a>
             </div>
-        </div>
     </nav>
 
-    <!-- Main content -->
+    <div class="container mx-auto px-4">
+        <div class="flex flex-wrap justify-center items-end gap-4 bg-dark-bg p-8 rounded-lg">
+            <div class="flex flex-col items-center w-full max-w-sm md:max-w-md lg:max-w-lg">
+                <img class="w-max h-auto mb-6" src="imagens/logo_timewise.png" alt="Logo Timewise">
+                <div class="mt-6">
+                    <button class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center" data-requires-auth>
+                        <i class="fas fa-download mr-2"></i>BAIXAR APLICATIVO
+                    </button>
+                </div>
+                <img class="w-max h-max mt-6" src="icones/icons8.png" alt="Ícones">
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/3 flex justify-center">
+                <img class="w-full h-auto object-cover object-top" src="imagens/mulher_de_chachos.png" alt="Mulher de Cachos" style="max-height: 70vh;">
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-primary h-1 mt-0"></div>
+    
     <div class="container mx-auto px-4 py-8">
-        <!-- Service provider info and schedule -->
-        <div id="firebaseStatus" class="mb-4 text-center text-lg"></div>
-        <div id="dataList" class="mb-8"></div>
+        <div class="bg-secondary p-8 rounded-lg shadow-lg mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-text-light">
+                <i class="fas fa-info-circle mr-2"></i>SOBRE NÓS
+            </h2>
+            <p class="text-text-light mb-4">
+                Bem-vindo ao TIMEWISE, onde simplificamos o agendamento de compromissos de maneira intuitiva e
+                eficiente.
+            </p>
+            <p class="text-text-light">
+                Somos estudantes do Senac Minas em Análise e Desenvolvimento de Sistemas, apaixonados por tecnologia e
+                comprometidos em criar soluções que facilitam seu dia a dia. Nosso objetivo é proporcionar uma
+                experiência fluida e sem complicações, permitindo que você agende compromissos de forma simples e rápida
+                diretamente pela web.
+            </p>
+        </div>
 
-        <!-- Button to Schedule -->
-        <button id="scheduleButton" class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-4 rounded w-full">
-            Quero Agendar
-        </button>
+        <div class="flex flex-col lg:flex-row items-center justify-center gap-8 mb-8">
+            <div class="w-full lg:w-1/2">
+                <img src="imagens/fotoapp.png" alt="Mobile app screenshot" class="rounded-lg w-full h-auto">
+            </div>
+            <div class="w-full lg:w-1/2 bg-secondary p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-text-light mb-4">
+                    <i class="fas fa-question-circle mr-2"></i>CANSADO DE PERDER HORAS TENTANDO ORGANIZAR SEU TEMPO?
+                </h2>
+                <p class="text-text-light mb-4">
+                    CONHEÇA NOSSA PLATAFORMA INOVADORA, TIME WISE AGENDAMENTOS, A SOLUÇÃO DEFINITIVA PARA
+                    TRANSFORMAR A FORMA COMO VOCÊ GERENCIA SEUS COMPROMISSOS, AGORA COM MAIS SABEDORIA.
+                </p>
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-mobile-alt mr-2"></i>NOSSO APLICATIVO
+                </h3>
+                <p class="text-text-light">
+                    DESENVOLVIDO PARA VOCÊ, EMPRESÁRIO! SEJA PESSOA FÍSICA OU JURÍDICA, NOSSO APP OFERECE TUDO PARA
+                    GERENCIAR SEU NEGÓCIO EFICIENTEMENTE.
+                </p>
+            </div>
+        </div>
 
-        <!-- Schedule List -->
-        <div id="scheduleList" class="bg-secondary p-6 rounded-lg shadow-lg">
-            <!-- Weekly schedule will be appended here -->
+        <div class="flex flex-col lg:flex-row items-center justify-center gap-8 mb-8">
+            <div class="w-full lg:w-1/2">
+                <img src="imagens/varios_celulares.png" alt="Mobile app screenshot" class="rounded-lg w-full h-auto">
+            </div>
+            <div class="w-full lg:w-1/2 bg-secondary p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-text-light mb-4">
+                    <i class="fas fa-clock mr-2"></i>OTIMIZE SEU TEMPO COM TIMEWISE
+                </h2>
+                <p class="text-text-light mb-4">
+                    NOSSA PLATAFORMA INOVADORA TRANSFORMA A FORMA COMO VOCÊ GERENCIA SEUS COMPROMISSOS, TRAZENDO MAIS
+                    EFICIÊNCIA E ORGANIZAÇÃO PARA O SEU DIA A DIA.
+                </p>
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-briefcase mr-2"></i>PARA EMPRESÁRIOS
+                </h3>
+                <p class="text-text-light">
+                    SEJA VOCÊ UM PROFISSIONAL AUTÔNOMO OU DONO DE UMA EMPRESA, NOSSO APP OFERECE TODAS AS FERRAMENTAS
+                    NECESSÁRIAS PARA GERENCIAR SEU NEGÓCIO DE FORMA EFICIENTE E PROFISSIONAL.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-building mr-2"></i>PARA EMPRESA
+                </h3>
+                <ul class="list-disc ml-4 text-text-light">
+                    <li>MAIOR EFICIÊNCIA E PRODUTIVIDADE;</li>
+                    <li>ORGANIZAÇÃO INTERNA MELHORADA;</li>
+                    <li>APRIMORAMENTO DA QUALIDADE DO ATENDIMENTO;</li>
+                    <li>REDUÇÃO DE CUSTOS OPERACIONAIS.</li>
+                </ul>
+            </div>
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-user mr-2"></i>PARA CLIENTE
+                </h3>
+                <ul class="list-disc ml-4 text-text-light">
+                    <li>MAIOR CONVENIÊNCIA NO AGENDAMENTO;</li>
+                    <li>MELHOR EXPERIÊNCIA DO USUÁRIO;</li>
+                    <li>FEEDBACK DIRETO E AVALIAÇÕES DE SERVIÇOS.</li>
+                </ul>
+            </div>
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-rocket mr-2"></i>NÃO PERCA TEMPO!
+                </h3>
+                <p class="text-text-light mb-4">
+                    BAIXE NOSSO APLICATIVO AGORA MESMO E TRANSFORME SUA EXPERIÊNCIA COM SERVIÇOS DE BELEZA.
+                    ACESSE UMA NOVA ERA DE CONVENIÊNCIA E EFICIÊNCIA, TANTO PARA SUA EMPRESA QUANTO PARA SEUS CLIENTES.
+                </p>
+                <button class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full" data-requires-auth>
+                    <i class="fas fa-download mr-2"></i>Baixar Agora
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-dark-bg text-text-light">
         <div class="container mx-auto px-4 py-8">
             <h2 class="text-3xl font-bold mb-6 text-center text-text-light">
-                <i class="fas fa-star mr-2"></i>TimeWise - O Melhor em Agendamentos Online
+                <i class="fas fa-star mr-2"></i>TIMEWISE: O MELHOR APP PARA GESTÃO DE AGENDAMENTOS!
             </h2>
             <div class="bg-primary h-1 mb-8"></div>
+            <div class="flex justify-center mb-8">
+                <div class="flex flex-row w-full max-w-[800px] object-cover h-auto justify-center">
+                    <img src="imagens/jovem-na-barbearia-aparando-cabelo.jpg" alt="barber screenshot" class="w-1/2 object-cover border-r-4 border-primary">
+                    <img src="imagens/homen_fazendo_barba.png" alt="barber screenshot" class="w-1/2 object-cover">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-dark-bg p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-text-light">
+                        <i class="fas fa-envelope mr-2"></i>CONTATOS
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><i class="fas fa-envelope-open-text mr-2"></i>Email: contato@timewise.com</li>
+                        <li><i class="fas fa-phone-alt mr-2"></i>Telefone: (31) 1234-5678</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>Endereço: Rua Exemplo, 123, Belo Horizonte, MG</li>
+                    </ul>
+                </div>
+                <div class="bg-secondary p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-text-light">
+                        <i class="fas fa-share-alt mr-2"></i>REDES SOCIAIS
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-primary transition duration-300"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
+                        <li><a href="#" class="hover:text-primary transition duration-300"><i class="fab fa-instagram mr-2"></i>Instagram</a></li>
+                        <li><a href="#" class="hover:text-primary transition duration-300"><i class="fab fa-linkedin mr-2"></i>LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script>
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBrG14qUCGOIMucxBArrhzZ2hG2ilidwnU",
             authDomain: "time-wise-agendamentos.firebaseapp.com",
@@ -95,113 +220,89 @@
             measurementId: "G-63ZD6V69EV"
         };
 
+        // Inicializar o Firebase
         firebase.initializeApp(firebaseConfig);
+
+        // Referência ao Firestore
         const db = firebase.firestore();
 
-        let currentUser = null;
-        let selectedDay = '';
-        let selectedTime = null;
-        let selectedServiceId = '';
-        let selectedCnpj = '';
-        let currentStartTime = '';
-        let currentEndTime = '';
-        let selectedWorkerId = null;
-        let isRedirecting = false;
+        // Função para gerar iniciais do nome
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
 
-        // Function to fetch provider data based on CNPJ
-        function fetchDataByCNPJ(cnpj) {
-            const statusElement = document.getElementById('firebaseStatus');
-            if (!cnpj) {
-                statusElement.textContent = "Por favor, insira um CNPJ.";
-                statusElement.classList.add('text-red-600');
-                return;
-            }
-
-            console.log("Buscando dados para o CNPJ:", cnpj);
-
-            db.collection("users").where("cnpj", "==", cnpj).get().then((userSnapshot) => {
-                if (userSnapshot.empty) {
-                    statusElement.textContent = "Nenhum estabelecimento encontrado com este CNPJ.";
-                    statusElement.classList.add('text-red-600');
-                    return;
+        // Função para carregar as informações do usuário
+        function loadUserInfo() {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    db.collection('usersweb').doc(user.uid).get()
+                        .then((doc) => {
+                            if (doc.exists) {
+                                const userData = doc.data();
+                                document.getElementById('userName').textContent = userData.name;
+                                const userAvatar = document.getElementById('userAvatar');
+                                if (userData.photoURL) {
+                                    userAvatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="w-8 h-8 rounded-full">`;
+                                } else {
+                                    userAvatar.textContent = getInitials(userData.name);
+                                }
+                                document.getElementById('userProfile').classList.remove('hidden');
+                                document.getElementById('authButtons').classList.add('hidden');
+                            } else {
+                                console.log("Documento do usuário não encontrado");
+                            }
+                        })
+                        .catch((error) => {
+                            console.log("Erro ao buscar dados do usuário:", error);
+                        });
+                } else {
+                    document.getElementById('authButtons').classList.remove('hidden');
                 }
-
-                const userData = userSnapshot.docs[0].data();
-                const userUid = userSnapshot.docs[0].id;
-                const establishmentName = userData.establishmentName || 'N/A';
-                const userEmail = userData.email || 'N/A';
-                const userPhone = userData.phone || 'N/A';
-                const logoUrl = userData.logoUrl || '';
-
-                const dataList = document.getElementById('dataList');
-                dataList.innerHTML = `
-                    <div class="text-center mb-8">
-                        ${logoUrl ? `<img src="${logoUrl}" alt="Logo" class="mx-auto mb-6 w-48 h-48 object-cover rounded-full border-4 shadow-lg">` : ''}
-                        <h2 class="text-5xl font-extrabold text-orange-custom">${establishmentName}</h2>
-                    </div>
-                    <div class="bg-dark-surface p-6 rounded-lg shadow-lg mb-8">
-                        <p class="mb-2"><strong class="text-orange-custom"><i class="fas fa-id-card mr-2"></i>CNPJ:</strong> ${cnpj}</p>
-                        <p class="mb-2"><strong class="text-orange-custom"><i class="fas fa-envelope mr-2"></i>Email:</strong> ${userEmail}</p>
-                        <p><strong class="text-orange-custom"><i class="fas fa-phone mr-2"></i>Telefone:</strong> ${userPhone}</p>
-                    </div>
-                    <div id="comentariosContainer" class="bg-dark-surface p-6 rounded-lg shadow-lg mb-8">
-                        <h3 class="text-2xl font-bold mb-4 text-orange-custom"><i class="fas fa-comments mr-2"></i>Comentários dos Clientes</h3>
-                        <div id="comentariosList" class="space-y-4"></div>
-                    </div>
-                `;
-
-                // Fetch customer comments
-                buscarComentarios(cnpj);
-
-                // Fetch services from subcollection
-                db.collection("users").doc(userUid).collection("services").get().then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        statusElement.textContent = "Nenhum serviço encontrado para este CNPJ.";
-                        statusElement.classList.add('text-red-600');
-                        return;
-                    }
-                    const servicesContainer = document.createElement('div');
-                    servicesContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-                    querySnapshot.forEach((doc) => {
-                        const serviceData = doc.data();
-                        const serviceCard = document.createElement('div');
-                        serviceCard.className = 'bg-dark-surface p-4 rounded-lg shadow-lg hover-grow fade-in';
-                        serviceCard.innerHTML = `
-                            <h3 class="text-xl font-bold mb-3 text-orange-custom">${serviceData.name || 'N/A'}</h3>
-                            <p class="text-sm mb-3 text-gray-300">${serviceData.description || 'N/A'}</p>
-                            <p class="font-bold mb-3 text-green-400">R$ ${serviceData.price || 'N/A'}</p>
-                            <img src="${serviceData.imageUrl || ''}" alt="Imagem do Serviço" class="w-full h-40 object-cover rounded-lg mb-3">
-                            <button onclick="agendarServico('${doc.id}', '${serviceData.name}')" class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded w-full transition duration-300 hover:shadow-lg">
-                                <i class="fas fa-calendar-plus mr-2"></i>Agendar
-                            </button>
-                        `;
-                        servicesContainer.appendChild(serviceCard);
-                    });
-                    dataList.appendChild(servicesContainer);
-                    statusElement.textContent = "Dados carregados com sucesso!";
-                    statusElement.classList.add('text-green-600');
-                }).catch((error) => {
-                    console.error("Erro ao buscar serviços: ", error);
-                    statusElement.textContent = "Erro ao carregar dados dos serviços.";
-                    statusElement.classList.add('text-red-600');
-                });
-            }).catch((error) => {
-                console.error("Erro ao buscar estabelecimento: ", error);
-                statusElement.textContent = "Erro ao carregar dados do estabelecimento.";
-                statusElement.classList.add('text-red-600');
             });
         }
 
-        function buscarComentarios(cnpj) {
-            // Add logic to fetch customer comments based on the CNPJ
+        // Chamar a função para carregar as informações do usuário
+        loadUserInfo();
+
+        // Adicionar evento de clique para o dropdown
+        const userDropdown = document.getElementById('userDropdown');
+        const userMenu = document.getElementById('userMenu');
+
+        userDropdown.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+
+        // Fechar o dropdown quando clicar fora dele
+        window.addEventListener('click', (event) => {
+            if (!userDropdown.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+
+        // Função de logout
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'page/LoginTimeWise.html';
+            }).catch((error) => {
+                console.log('Erro ao fazer logout:', error);
+            });
         }
 
-        function agendarServico(serviceId, serviceName) {
-            // Add logic to handle scheduling
-        }
+        // Adicionar evento de clique para o botão de logout
+        document.getElementById('logoutButton').addEventListener('click', logout);
 
-        // Load initial data
-        fetchDataByCNPJ('51.416.544/8484-48'); // Replace with actual CNPJ
+        // Verificar autenticação ao clicar em links/botões que requerem autenticação
+        document.querySelectorAll('[data-requires-auth]').forEach(element => {
+            element.addEventListener('click', (event) => {
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (!user) {
+                        event.preventDefault();
+                        sessionStorage.setItem('returnUrl', window.location.href);
+                        window.location.href = 'page/LoginTimeWise.html';
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
