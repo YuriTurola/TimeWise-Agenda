@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeWise - Agendamentos Inteligentes</title>
+    <title>AppointmentPro - Agendamentos Online</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -14,12 +14,12 @@
             theme: {
                 extend: {
                     colors: {
-                        'dark-bg': '#000000', // Preto escuro forte
-                        'primary': '#b47a17',
-                        'secondary': '#4A4A4A',
-                        'accent': '#FFD700',
-                        'text-light': '#E0E0E0',
-                        'text-dark': '#0D0D0D'
+                        'dark-bg': '#000000', // Strong dark black
+                        'primary': '#b47a17', // Golden primary color
+                        'secondary': '#4A4A4A', // Gray secondary color
+                        'accent': '#FFD700', // Yellow accent
+                        'text-light': '#E0E0E0', // Light text color
+                        'text-dark': '#0D0D0D' // Dark text color
                     }
                 }
             }
@@ -27,48 +27,121 @@
     </script>
 </head>
 <body class="bg-dark-bg text-text-light">
-  <nav class="bg-secondary p-4 shadow-md">
-    <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-primary text-2xl font-bold flex items-center">
-            <i class="fas fa-clock mr-2"></i>TimeWise
-        </h1>
-        
-        <!-- User Profile section, initially hidden -->
-        <div id="userProfile" class="text-text-light hidden">
-            <div class="relative">
-                <button id="userDropdown" class="flex items-center space-x-2 focus:outline-none">
-                    <div id="userAvatar" class="w-8 h-8 rounded-full bg-primary text-text-dark flex items-center justify-center mr-2"></div>
-                    <span id="userName" class="text-text-light"></span>
-                    <i class="fas fa-chevron-down text-text-light ml-2"></i>
+    <!-- Header -->
+    <nav class="bg-secondary p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-primary text-2xl font-bold flex items-center">
+                <i class="fas fa-calendar-check mr-2"></i>AppointmentPro
+            </h1>
+
+            <!-- User Profile section, initially hidden -->
+            <div id="userProfile" class="text-text-light hidden">
+                <div class="relative">
+                    <button id="userDropdown" class="flex items-center space-x-2 focus:outline-none">
+                        <div id="userAvatar" class="w-8 h-8 rounded-full bg-primary text-text-dark flex items-center justify-center mr-2"></div>
+                        <span id="userName" class="text-text-light"></span>
+                        <i class="fas fa-chevron-down text-text-light ml-2"></i>
+                    </button>
+                    <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-secondary rounded-md shadow-lg hidden">
+                        <a href="page/appointments.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Meus Agendamentos</a>
+                        <a href="page/profile.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Perfil</a>
+                        <a href="#" id="logoutButton" class="block px-4 py-2 text-sm text-text-light hover:bg-primary">Sair</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login button section -->
+            <div id="authButtons" class="text-text-light hidden">
+                <a href="page/login.html" class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-6 rounded-full transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Section for introduction -->
+        <div class="bg-secondary p-8 rounded-lg shadow-lg mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-text-light">
+                <i class="fas fa-info-circle mr-2"></i>Bem-vindo ao AppointmentPro
+            </h2>
+            <p class="text-text-light mb-4">
+                Simplificamos o agendamento de compromissos online, permitindo que você gerencie seus horários de forma fácil e eficiente.
+            </p>
+            <p class="text-text-light">
+                Utilize nossa plataforma para agendar compromissos de trabalho, consultas, reuniões e muito mais. O AppointmentPro está aqui para otimizar sua organização.
+            </p>
+        </div>
+
+        <!-- Features section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-briefcase mr-2"></i>Para Profissionais
+                </h3>
+                <ul class="list-disc ml-4 text-text-light">
+                    <li>Gerenciamento de agendamentos simplificado;</li>
+                    <li>Ferramentas para maximizar produtividade;</li>
+                    <li>Agenda personalizada e sincronizada;</li>
+                    <li>Redução de no-shows e cancelamentos.</li>
+                </ul>
+            </div>
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-user mr-2"></i>Para Clientes
+                </h3>
+                <ul class="list-disc ml-4 text-text-light">
+                    <li>Agendamentos rápidos e práticos;</li>
+                    <li>Confirmar, cancelar e alterar compromissos facilmente;</li>
+                    <li>Receba lembretes e atualizações automáticas.</li>
+                </ul>
+            </div>
+            <div class="bg-secondary p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-text-light mb-4">
+                    <i class="fas fa-clock mr-2"></i>Otimize seu Tempo
+                </h3>
+                <p class="text-text-light mb-4">
+                    Nosso sistema de agendamentos online ajuda você a poupar tempo e evita esquecimentos. Fique tranquilo, o AppointmentPro cuida de tudo para você.
+                </p>
+                <button class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
+                    <i class="fas fa-download mr-2"></i>Baixar Aplicativo
                 </button>
-                <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-secondary rounded-md shadow-lg hidden">
-                    <a href="page/estabelecimento.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Agendar</a>
-                    <a href="page/Agendamentos.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Agendamentos</a>
-                    <a href="page/Perfil.html" class="block px-4 py-2 text-sm text-text-light hover:bg-primary" data-requires-auth>Perfil</a>
-                    <a href="#" id="logoutButton" class="block px-4 py-2 text-sm text-text-light hover:bg-primary">Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark-bg text-text-light">
+        <div class="container mx-auto px-4 py-8">
+            <h2 class="text-3xl font-bold mb-6 text-center text-text-light">
+                <i class="fas fa-star mr-2"></i>AppointmentPro - O Melhor em Agendamentos Online
+            </h2>
+            <div class="bg-primary h-1 mb-8"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-dark-bg p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-text-light">
+                        <i class="fas fa-envelope mr-2"></i>Contatos
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><i class="fas fa-envelope-open-text mr-2"></i>Email: contato@appointmentpro.com</li>
+                        <li><i class="fas fa-phone-alt mr-2"></i>Telefone: (31) 1234-5678</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>Endereço: Rua Exemplo, 123, Belo Horizonte, MG</li>
+                    </ul>
+                </div>
+                <div class="bg-secondary p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-text-light">
+                        <i class="fas fa-share-alt mr-2"></i>Redes Sociais
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-primary transition duration-300"><i class="fab fa-facebook mr-2"></i>Facebook</a></li>
+                        <li><a href="#" class="hover:text-primary transition duration-300"><i class="fab fa-instagram mr-2"></i>Instagram</a></li>
+                        <li><a href="#" class="hover:text-primary transition duration-300"><i class="fab fa-linkedin mr-2"></i>LinkedIn</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-
-        <!-- Login button section, hidden when logged in -->
-        <div id="authButtons" class="text-text-light hidden">
-            <a href="page/LoginTimeWise.html" class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-6 rounded-full transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
-                <i class="fas fa-sign-in-alt mr-2"></i>Login
-            </a>
-        </div>
-    </div>
-</nav>
-
-
-    <div class="container mx-auto px-4">
-        <div class="flex flex-wrap justify-center items-end gap-4 bg-dark-bg p-8 rounded-lg">
-            <div class="flex flex-col items-center w-full max-w-sm md:max-w-md lg:max-w-lg">
-                <img class="w-max h-auto mb-6" src="imagens/logo_timewise.png" alt="Logo Timewise">
-                <div class="mt-6">
-                    <button class="bg-primary hover:bg-accent text-text-dark font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center" data-requires-auth>
-                        <i class="fas fa-download mr-2"></i>BAIXAR APLICATIVO
-                    </button>
-                </div>
+    </footer></div>
                 <img class="w-max h-max mt-6" src="icones/icons8.png" alt="Ícones">
             </div>
             <div class="w-full md:w-1/2 lg:w-1/3 flex justify-center">
