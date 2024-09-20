@@ -1,35 +1,34 @@
 {
-    "builds": [
-      {
-        "src": "public/**/*",
-        "use": "@vercel/static"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/",
-        "dest": "/public/index.html"
-      },
-      {
-        "src": "/pages/(.*)",
-        "dest": "/public/pages/$1"
-      },
-      {
-        "src": "/css/(.*)",
-        "dest": "/public/css/$1"
-      },
-      {
-        "src": "/js/(.*)",
-        "dest": "/public/js/$1"
-      },
-      {
-        "src": "/images/(.*)",
-        "dest": "/public/images/$1"
-      },
-      {
-        "src": "/icons/(.*)",
-        "dest": "/public/icons/$1"
-      }
-    ]
-  }
-  
+  "builds": [
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/page/(.*)",
+      "dest": "/public/page/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/public/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/public/js/$1"
+    },
+    {
+      "src": "/imagens/(.*)",
+      "dest": "/public/imagens/$1"
+    },
+    {
+      "src": "/icones/(.*)",
+      "dest": "/public/icones/$1"
+    }
+  ]
+}

@@ -16,10 +16,8 @@ function carregarAgendamentos(user) {
                 let hasRealizados = false;
                 appointments.forEach((appointment, index) => {
                     console.log("Dados do agendamento:", appointment);
-                    const dataAgendamento = getProximaData(appointment.day);
-                    console.log("Data do agendamento:", dataAgendamento);
-                    const dataFormatada = formatarData(dataAgendamento);
-                    console.log("Data formatada:", dataFormatada);
+                    const dataHoraExata = appointment.dataHoraExata || 'Data não disponível';
+                    console.log("Data e hora do agendamento:", dataHoraExata);
 
                     const card = document.createElement('div');
                     card.className = 'bg-dark-surface rounded-lg overflow-hidden shadow-lg hover-grow fade-in';
@@ -31,7 +29,7 @@ function carregarAgendamentos(user) {
                         </div>
                         <div class="p-6">
                             <p class="text-lg mb-2 text-gray-400"><strong><i class="far fa-calendar-alt mr-2"></i>Agendado para:</strong></p>
-                            <p class="text-2xl font-bold mb-4 text-orange-custom">${dataFormatada} às ${appointment.time}</p>
+                            <p class="text-2xl font-bold mb-4 text-orange-custom">${dataHoraExata}</p>
                             <div class="bg-gray-800 p-3 rounded-lg mb-4 flex justify-between items-center">
                                 <span class="text-gray-400"><i class="fas fa-tag mr-2"></i>Preço:</span>
                                 <span class="text-2xl font-bold text-orange-custom">R$ ${typeof appointment.price === 'number' ? appointment.price.toFixed(2) : appointment.price}</span>
@@ -65,7 +63,7 @@ function carregarAgendamentos(user) {
                         agendamentosList.appendChild(card);
                     }
 
-                    iniciarCronometro(index, dataAgendamento, appointment.time, appointment.pagamento);
+                    iniciarCronometro(index, appointment.dataHoraExata, appointment.pagamento);
                 });
 
                 if (!hasRealizados) {
@@ -84,11 +82,9 @@ function carregarAgendamentos(user) {
         });
 }
 
-function iniciarCronometro(index, dataAgendamento, horaAgendamento, pago) {
+function iniciarCronometro(index, dataHoraExata, pago) {
     const cronometroElement = document.getElementById(`cronometro-${index}`);
-    const [hora, minuto] = horaAgendamento.split(':');
-    const dataHoraAgendamento = new Date(dataAgendamento);
-    dataHoraAgendamento.setHours(parseInt(hora), parseInt(minuto));
+    const dataHoraAgendamento = new Date(dataHoraExata.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1'));
 
     const limiteParaCancelamento = new Date(dataHoraAgendamento.getTime() - 90 * 60000); // 1h30min antes
 

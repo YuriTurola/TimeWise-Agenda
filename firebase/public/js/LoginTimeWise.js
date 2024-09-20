@@ -1,4 +1,4 @@
-// Configuração do Firebase
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBrG14qUCGOIMucxBArrhzZ2hG2ilidwnU",
     authDomain: "time-wise-agendamentos.firebaseapp.com",
@@ -9,13 +9,13 @@ const firebaseConfig = {
     measurementId: "G-63ZD6V69EV"
 };
 
-// Inicializar o Firebase
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Inicializar Firestore
+// Initialize Firestore
 const db = firebase.firestore();
 
-// Referências aos elementos do DOM
+// DOM references for forms and messages
 const loginSection = document.getElementById('loginSection');
 const registerSection = document.getElementById('registerSection');
 const resetPasswordSection = document.getElementById('resetPasswordSection');
@@ -24,28 +24,45 @@ const registerForm = document.getElementById('registerForm');
 const resetPasswordForm = document.getElementById('resetPasswordForm');
 const message = document.getElementById('message');
 
-// Funções para alternar entre as seções
+// Function to display messages and automatically hide them after 4 seconds
+function showMessage(text, color) {
+    message.textContent = text;
+    message.style.color = color;
+    message.style.display = 'block';
+
+    // Hide the message after 4 seconds
+    setTimeout(() => {
+        message.textContent = "";
+        message.style.display = 'none';
+    }, 4000);
+}
+
+// Toggle between forms
 document.getElementById('showRegister').addEventListener('click', () => {
     loginSection.style.display = 'none';
     registerSection.style.display = 'block';
+    resetPasswordSection.style.display = 'none';
 });
 
 document.getElementById('showLogin').addEventListener('click', () => {
     registerSection.style.display = 'none';
     loginSection.style.display = 'block';
+    resetPasswordSection.style.display = 'none';
 });
 
 document.getElementById('showResetPassword').addEventListener('click', () => {
     loginSection.style.display = 'none';
     resetPasswordSection.style.display = 'block';
+    registerSection.style.display = 'none';
 });
 
 document.getElementById('showLoginFromReset').addEventListener('click', () => {
     resetPasswordSection.style.display = 'none';
     loginSection.style.display = 'block';
+    registerSection.style.display = 'none';
 });
 
-// Login
+// Login form submission
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
@@ -54,16 +71,15 @@ loginForm.addEventListener('submit', (e) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            message.textContent = "Login bem-sucedido!";
-            message.style.color = "#4CAF50"; // Verde para sucesso
-            // O redirecionamento será tratado pelo onAuthStateChanged
+            showMessage("Login bem-sucedido!", "#4CAF50"); // Success message in green
+            // Redirect handled by onAuthStateChanged
         })
         .catch((error) => {
-            // ... (mantenha o código de tratamento de erro existente)
+            showMessage("Erro no login: " + error.message, "#ff4444"); // Error message in red
         });
 });
 
-// Cadastro
+// Register form submission
 registerForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('registerName').value;
@@ -73,8 +89,9 @@ registerForm.addEventListener('submit', (e) => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            
-            // Salvar dados do usuário no Firestore
+            sessionStorage.setItem('isNewUser', true);
+
+            // Save user data in Firestore
             return db.collection('usersweb').doc(user.uid).set({
                 name: name,
                 email: user.email,
@@ -82,8 +99,13 @@ registerForm.addEventListener('submit', (e) => {
             });
         })
         .then(() => {
-            message.textContent = "Cadastro realizado com sucesso!";
-            message.style.color = "#4CAF50"; // Verde para sucesso
+            showMessage("Cadastro realizado com sucesso! Agora faça login.", "#4CAF50"); // Success message in green
+
+            // Sign out the user to prevent automatic login after registration
+            return firebase.auth().signOut();
+        })
+        .then(() => {
+            // Show login form after signing out
             registerSection.style.display = 'none';
             loginSection.style.display = 'block';
         })
@@ -102,37 +124,49 @@ registerForm.addEventListener('submit', (e) => {
                 default:
                     errorMessage = "Erro no cadastro: " + error.message;
             }
-            message.textContent = errorMessage;
-            message.style.color = "#ff4444"; // Vermelho para erro
+            showMessage(errorMessage, "#ff4444"); // Error message in red
         });
 });
 
-// Recuperação de senha
+// Password reset form submission
 resetPasswordForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('resetEmail').value;
 
     firebase.auth().sendPasswordResetEmail(email)
         .then(() => {
-            message.textContent = "Email de recuperação de senha enviado. Verifique sua caixa de entrada.";
+            showMessage("Email de recuperação de senha enviado. Verifique sua caixa de entrada.", "#4CAF50");
             resetPasswordSection.style.display = 'none';
             loginSection.style.display = 'block';
         })
         .catch((error) => {
-            message.textContent = "Erro ao enviar email de recuperação: " + error.message;
+            showMessage("Erro ao enviar email de recuperação: " + error.message, "#ff4444"); // Error message in red
         });
 });
 
-// No início do arquivo, após a inicialização do Firebase:
+// Handle authentication state changes
 firebase.auth().onAuthStateChanged((user) => {
+    const currentPage = window.location.pathname;
+
     if (user) {
-        const returnUrl = sessionStorage.getItem('returnUrl');
-        if (returnUrl) {
-            sessionStorage.removeItem('returnUrl');
-            window.location.href = returnUrl;
+        // Check if the user is newly registered
+        const isNewUser = sessionStorage.getItem('isNewUser');
+
+        if (isNewUser) {
+            sessionStorage.removeItem('isNewUser');
+            // Show login form for newly registered users
+            registerSection.style.display = 'none';
+            loginSection.style.display = 'block';
         } else {
-            // Se não houver returnUrl, redirecione para uma página padrão
-            window.location.href = '../agenda/pre.101.1.html';
+            // Redirect logged-in users to "estabelecimento.html"
+            if (currentPage !== '/estabelecimento.html') {
+                window.location.href = 'estabelecimento.html';
+            }
         }
+    } else {
+        // If no user is logged in, display the login form
+        loginSection.style.display = 'block';
+        registerSection.style.display = 'none';
+        resetPasswordSection.style.display = 'none';
     }
 });
