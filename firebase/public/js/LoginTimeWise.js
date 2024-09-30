@@ -220,3 +220,31 @@ firebase.auth().onAuthStateChanged((user) => {
         resetPasswordSection.style.display = 'none';
     }
 });
+function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            console.log('Login bem-sucedido');
+            const returnUrl = sessionStorage.getItem('returnUrl');
+            if (returnUrl) {
+                sessionStorage.removeItem('returnUrl');
+                window.location.href = returnUrl;
+            } else {
+                window.location.href = '../page/estabelecimento.html'; // ou qualquer página padrão
+            }
+        })
+        .catch((error) => {
+            console.error('Erro no login:', error);
+            alert('Erro no login: ' + error.message);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const returnUrl = sessionStorage.getItem('returnUrl');
+    if (returnUrl) {
+        console.log('URL de retorno armazenada:', returnUrl);
+    }
+});
+
