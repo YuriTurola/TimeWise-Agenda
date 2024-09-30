@@ -9,7 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Playfair+Display:wght@400;700&family=Lora:wght@400;700&family=Merriweather:wght@400;700&family=Abril+Fatface&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700&family=Permanent+Marker&family=Alfa+Slab+One&family=Fredericka+the+Great&family=Lobster&family=Pacifico&family=Righteous&family=Russo+One&family=Staatliches&family=Teko:wght@400;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -23,95 +25,447 @@
             }
         }
     </script>
-    <style>
-        .hover-grow {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+    <style id="customStyles">
+        :root {
+            --cor-fundo: #ffffff;
+            --cor-secundaria: #ffffff;
+            --cor-container: #1E1E1E;
+            --cor-botoes: #f0971c;
+            --cor-texto: #000000;
+            --fonte-site: Arial;
+            --tamanho-fonte-titulo: 24px;
+            --tamanho-fonte-texto: 16px;
+            --tamanho-fonte-botoes: 14px;
+            --espacamento-linhas: 1.5;
+            --arredondamento-bordas: 4px;
+            --sombra-elementos: 0 2px 4px rgba(0,0,0,0.1);
+            --opacidade-background: 1;
+            --padding-container: 20px;
+            --margem-elementos: 10px;
+            --altura-header: 60px;
+            --largura-maxima-conteudo: 1200px;
+            --efeitos-hover: brightness(1.1);
+            --animacao-transicao: all 0.3s ease;
+            --layout-grid: 1fr 1fr;
+            --largura-scrollbar: 16px;
+            --intensidade-brilho-botoes: 0px;
+            --cor-brilho-botoes: #ffffff;
+            --intensidade-brilho-botoes-hover: 0px;
+            --cor-brilho-botoes-hover: #ffffff;
+            --estilo-botoes: default;
+            --efeito-hover-botoes: none;
+            --estilo-cabecalho: default;
+            --imagem-cabecalho: none;
+            --efeitos-hover-brightness: brightness(1.1);
+            --tema: 'claro';
+            --animacao-hover: scale;
+            --estilo-lista: disc;
+            --transparencia-elementos: 1;
+            --estilo-bordas: solid;
+            --cor-fundo-cartoes: #ffffff;
+            --espacamento-elementos: 16px;
+            --opacidade-texto: 1;
+            --fonte-icones: FontAwesome;
+            --tamanho-icones: 16px;
+            --animacao-entrada: fade;
+            --cor-fundo-comentarios: #ffffff;
+            --cor-fundo-header: #1E1E1E;
+            --cor-fundo-agendamentos: #ffffff;
+            --cor-fundo-botoes-agendamento: #f0971c;
+            --cor-fundo-servicos: #ffffff;
+            --cor-fundo-modal-agendamento: #1E1E1E;
+            --cor-botao-modal-agendamento: #f0971c;
+            --cor-botao-bloqueado-modal-agendamento: #cccccc;
         }
-
-        .hover-grow:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 20px rgba(240, 151, 28, 0.2);
+        body {
+            background-color: var(--cor-fundo);
+            font-family: var(--fonte-site);
+            color: var(--cor-texto);
+            line-height: var(--espacamento-linhas);
         }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        h1, h2, h3, h4, h5, h6 {
+            font-size: var(--tamanho-fonte-titulo);
         }
-
+        p, span, div {
+            font-size: var(--tamanho-fonte-texto);
+        }
+        button, .agendar-btn, .btn-custom {
+            background-color: var(--cor-botoes) !important;
+            border-color: var(--cor-botoes) !important;
+            color: var(--cor-texto) !important;
+            font-size: var(--tamanho-fonte-botoes);
+            border-radius: var(--arredondamento-bordas-botoes, var(--arredondamento-bordas));
+            box-shadow: var(--sombra-elementos), 0 0 var(--intensidade-brilho-botoes) var(--cor-brilho-botoes);
+            transition: var(--animacao-transicao);
+        }
+        button:hover, .agendar-btn:hover, .btn-custom:hover {
+            filter: var(--efeitos-hover-brightness);
+            box-shadow: var(--sombra-elementos), 0 0 var(--intensidade-brilho-botoes-hover) var(--cor-brilho-botoes-hover);
+        }
+        .bg-container-custom {
+            background-color: var(--cor-container) !important;
+            padding: var(--padding-container);
+            margin: var(--margem-elementos);
+            border-radius: var(--arredondamento-bordas);
+        }
+        nav {
+            height: var(--altura-header);
+        }
+        .container {
+            max-width: var(--largura-maxima-conteudo);
+        }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: var(--layout-grid);
+            gap: var(--margem-elementos);
+        }
+        ::-webkit-scrollbar {
+            width: var(--largura-scrollbar);
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--cor-principal);
+            border-radius: var(--arredondamento-bordas);
+        }
+        .modo-noturno {
+            filter: invert(1) hue-rotate(180deg);
+        }
+        #agendamentoModal > div {
+            background-color: var(--cor-container) !important;
+        }
+        .header-container {
+            background: var(--background-cabecalho, var(--cor-container));
+            background-size: cover;
+            background-position: center;
+        }
+        .tema-escuro {
+            --cor-fundo: #121212;
+            --cor-texto: #ffffff;
+            /* ... ajuste outras cores para o tema escuro ... */
+        }
+        @keyframes fade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .elemento-animado {
+            animation: var(--animacao-entrada) 0.5s ease;
+        }
+        .tema-claro {
+            --cor-fundo: #ffffff;
+            --cor-texto: #000000;
+        }
+        .tema-escuro {
+            --cor-fundo: #121212;
+            --cor-texto: #ffffff;
+        }
+        ul {
+            list-style-type: var(--estilo-lista);
+        }
+        .elemento-transparente {
+            opacity: var(--transparencia-elementos);
+        }
+        .elemento-com-borda {
+            border-style: var(--estilo-bordas);
+        }
+        .cartao {
+            background-color: var(--cor-fundo-cartoes);
+        }
+        .preview-container {
+            gap: var(--espacamento-elementos);
+        }
+        p, h1, h2, h3, h4, h5, h6 {
+            opacity: var(--opacidade-texto);
+        }
+        i {
+            font-size: var(--tamanho-icones);
+        }
+        
+    </style>
+    <style id="popupAnimations">
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .slide-in {
-            animation: slideIn 0.5s ease-out;
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        @keyframes slideUpIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        #comentarioConteudo {
-            animation: fadeIn 0.5s ease-in-out;
+        @keyframes slideUpOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
         }
 
-        #comentarioCarrossel {
+        @keyframes slideDownIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideDownOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+
+        @keyframes slideLeftIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideLeftOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+
+        @keyframes slideRightIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideRightOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes zoomOut {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(0.5); opacity: 0; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .popup {
+            animation-duration: 0.5s;
+            animation-fill-mode: both;
+        }
+
+        .popup[data-animation="fade"] { animation-name: fadeIn; }
+        .popup[data-animation="slideUp"] { animation-name: slideUpIn; }
+        .popup[data-animation="slideDown"] { animation-name: slideDownIn; }
+        .popup[data-animation="slideLeft"] { animation-name: slideLeftIn; }
+        .popup[data-animation="slideRight"] { animation-name: slideRightIn; }
+        .popup[data-animation="zoomIn"] { animation-name: zoomIn; }
+        .popup[data-animation="bounce"] { animation-name: bounce; }
+        .popup[data-animation="rotate"] { animation-name: rotate; }
+        .popup[data-animation="shake"] { animation-name: shake; }
+
+        .popup.closing[data-animation="fade"] { animation-name: fadeOut; }
+        .popup.closing[data-animation="slideUp"] { animation-name: slideUpOut; }
+        .popup.closing[data-animation="slideDown"] { animation-name: slideDownOut; }
+        .popup.closing[data-animation="slideLeft"] { animation-name: slideLeftOut; }
+        .popup.closing[data-animation="slideRight"] { animation-name: slideRightOut; }
+        .popup.closing[data-animation="zoomIn"] { animation-name: zoomOut; }
+        .popup.closing[data-animation="bounce"] { animation-name: fadeOut; }
+        .popup.closing[data-animation="rotate"] { animation-name: fadeOut; }
+        .popup.closing[data-animation="shake"] { animation-name: fadeOut; }
+    </style>
+    <style id="popupStyles">
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+        }
+
+        .popup.closing {
+            pointer-events: none;
+        }
+
+        .popup-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--cor-botao-fechar, #f0971c);
+            color: var(--cor-texto-botao-fechar, #ffffff);
+            border: none;
+            font-size: var(--tamanho-fonte-botao-fechar, 18px);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .popup-close-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--cor-botao-fechar-hover, #e08c1a);
+        }
+    </style>
+    <style>
+        .slider-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .slider img {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .slider-prev,
+        .slider-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .slider-prev {
+            left: 10px;
+        }
+
+        .slider-next {
+            right: 10px;
+        }
+    </style>
+    <style>
+        .services-carousel {
+            position: relative;
             width: 100%;
             overflow: hidden;
         }
 
-        #comentarioSlider {
+        .carousel-container {
+            position: relative;
+        }
+
+        .carousel-wrapper {
+            overflow: hidden;
+        }
+
+        .carousel-content {
             display: flex;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 0.3s ease;
         }
 
-        .comentario-item {
-            width: 25%;
-            /* 4 comentários por vez */
-            flex-shrink: 0;
-            padding: 0 8px;
+        .carousel-content > div {
+            flex: 0 0 25%; /* Cada item ocupa 25% da largura (4 itens por vez) */
+            padding: 0 10px; /* Espaçamento entre os itens */
         }
 
-        @media (max-width: 1024px) {
-            .comentario-item {
-                width: 33.333%;
-                /* 3 comentários por vez em telas médias */
-            }
+        .carousel-prev,
+        .carousel-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            display: none; /* Inicialmente oculto */
         }
 
-        @media (max-width: 768px) {
-            .comentario-item {
-                width: 50%;
-                /* 2 comentários por vez em telas pequenas */
-            }
+        .carousel-prev {
+            left: 10px;
         }
 
-        @media (max-width: 480px) {
-            .comentario-item {
-                width: 100%;
-                /* 1 comentário por vez em telas muito pequenas */
-            }
+        .carousel-next {
+            right: 10px;
+        }
+    </style>
+    <style>
+        .agendamento-container {
+            margin-top: 20px;
+        }
+
+        .carrossel-agendamento {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+
+        .carrossel-agendamento > div {
+            flex: 0 0 33.33%;
+            padding: 10px;
+        }
+
+        .carrossel-prev,
+        .carrossel-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .carrossel-prev {
+            left: 10px;
+        }
+
+        .carrossel-next {
+            right: 10px;
+        }
+
+        .grid-agendamento {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-agendamento > div {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
     </style>
 </head>
 
 <body class="bg-dark-bg text-gray-300">
-    <nav class="bg-dark-surface p-4 shadow-md">
+    <nav class="bg-container-custom p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-orange-custom text-2xl font-bold flex items-center">
-                <i class="fas fa-clock mr-2"></i>TimeWise
+            <h1 id="estabelecimentoTitulo" class="text-orange-custom text-2xl font-bold flex items-center">
+                <img id="estabelecimentoLogo" src="" alt="Logo" class="mr-2 h-8 w-8 object-contain hidden">
+                <span>TimeWise</span>
             </h1>
             <div id="userProfile" class="text-gray-300 hidden relative">
                 <button id="menuButton"
@@ -120,7 +474,7 @@
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div id="dropdownMenu"
-                    class="absolute right-0 mt-2 w-48 bg-dark-surface rounded-md shadow-xl z-20 hidden">
+                    class="absolute right-0 mt-2 w-48 bg-container-custom rounded-md shadow-xl z-20 hidden">
                     <a href="estabelecimento.html"
                         class="block px-4 py-2 text-sm text-gray-300 hover:bg-orange-custom hover:text-white">
                         <i class="fas fa-calendar-plus mr-2"></i>Agendar
@@ -146,23 +500,15 @@
     </nav>
 
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold mb-4 text-center text-orange-custom slide-in">
-            <i class="fas fa-calendar-plus mr-2"></i>Buscar Por CNPJ TimeWise
+        <h1 id="estabelecimentoDescricao" class="text-3xl font-bold mb-4 text-center text-orange-custom slide-in">
         </h1>
         <div id="firebaseStatus" class="text-center mb-4"></div>
-        <input type="text" id="cnpjInput" placeholder="Digite o CNPJ"
-            class="border p-2 mb-4 w-full bg-dark-surface text-gray-300 rounded-lg">
-        <button onclick="fetchDataByCNPJ()"
-            class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded w-full transition duration-300 hover:shadow-lg">
-            <i class="fas fa-search mr-2"></i>Buscar Dados
-        </button>
         <ul id="dataList" class="mt-8"></ul>
     </div>
 
     <!-- Modal de Agendamento -->
     <div id="agendamentoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
-        <div class="bg-dark-surface p-6 rounded-lg max-w-4xl w-full mx-auto shadow-lg fade-in">
-            <!-- Alterado de max-w-2xl para max-w-4xl -->
+        <div class="p-6 rounded-lg max-w-4xl w-full mx-auto shadow-lg fade-in" style="background-color: var(--cor-container);">
             <h2 class="text-2xl font-bold mb-4 text-orange-custom text-center">
                 <i class="fas fa-calendar-check mr-2"></i>Agendar Serviço
             </h2>
@@ -190,6 +536,8 @@
             </button>
         </div>
     </div>
+
+    <div id="popupContainer"></div>
 
     <script src="../js/firebase-config.js"></script>
     <script src="../js/util.js"></script>
@@ -219,6 +567,686 @@
                 }
             });
         });
+    </script>
+    <script>
+        let carregamentoIniciado = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!carregamentoIniciado) {
+                carregamentoIniciado = true;
+                const urlParams = new URLSearchParams(window.location.search);
+                const cnpj = urlParams.get('cnpj');
+                if (cnpj) {
+                    carregarPersonalizacoes(cnpj);
+                    carregarPopups(cnpj);
+                }
+            }
+        });
+
+        function carregarPersonalizacoes(cnpj) {
+            console.log("Carregando personalizações para CNPJ:", cnpj);
+            db.collection("users").where("cnpj", "==", cnpj).get().then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    const data = doc.data().personalizacao || {};
+                    console.log("Dados de personalização:", data);
+
+                    // Atualizar título e descrição
+                    document.getElementById('estabelecimentoTitulo').querySelector('span').textContent = data.tituloEstabelecimento || 'TimeWise';
+                    document.getElementById('estabelecimentoDescricao').textContent = data.descricaoEstabelecimento || '';
+
+                    // Atualizar logo
+                    if (data.logoUrl) {
+                        const logoImg = document.getElementById('estabelecimentoLogo');
+                        logoImg.src = data.logoUrl;
+                        logoImg.classList.remove('hidden');
+                    }
+
+                    // Aplicar estilos personalizados
+                    const root = document.documentElement;
+                    root.style.setProperty('--cor-fundo', data.corFundo || '#ffffff');
+                    root.style.setProperty('--cor-secundaria', data.corSecundaria || '#ffffff');
+                    root.style.setProperty('--cor-container', data.corContainer || '#1E1E1E');
+                    root.style.setProperty('--cor-botoes', data.corBotoes || '#f0971c');
+                    root.style.setProperty('--cor-texto', data.corTexto || '#000000');
+                    root.style.setProperty('--fonte-site', data.fonteSite || 'Arial, sans-serif');
+                    root.style.setProperty('--tamanho-fonte-titulo', `${data.tamanhoFonteTitulo || 24}px`);
+                    root.style.setProperty('--tamanho-fonte-texto', `${data.tamanhoFonteTexto || 16}px`);
+                    root.style.setProperty('--tamanho-fonte-botoes', `${data.tamanhoFonteBotoes || 14}px`);
+                    root.style.setProperty('--espacamento-linhas', data.espacamentoLinhas || 1.5);
+                    root.style.setProperty('--arredondamento-bordas', `${data.arredondamentoBordas || 4}px`);
+                    root.style.setProperty('--sombra-elementos', data.sombraElementos || '0 2px 4px rgba(0,0,0,0.1)');
+                    root.style.setProperty('--opacidade-background', data.opacidadeBackground || 1);
+                    root.style.setProperty('--padding-container', `${data.paddingContainer || 20}px`);
+                    root.style.setProperty('--margem-elementos', `${data.margemElementos || 10}px`);
+                    root.style.setProperty('--altura-header', `${data.alturaHeader || 60}px`);
+                    root.style.setProperty('--largura-maxima-conteudo', `${data.larguraMaximaConteudo || 1200}px`);
+                    root.style.setProperty('--efeitos-hover', data.efeitosHover || 'brightness(1.1)');
+                    root.style.setProperty('--animacao-transicao', data.animacaoTransicao || 'all 0.3s ease');
+                    root.style.setProperty('--layout-grid', data.layoutGrid || '1fr 1fr');
+                    root.style.setProperty('--intensidade-brilho-botoes', `${data.intensidadeBrilhoBotoes || 0}px`);
+                    root.style.setProperty('--cor-brilho-botoes', data.corBrilhoBotoes || '#ffffff');
+                    root.style.setProperty('--intensidade-brilho-botoes-hover', `${data.intensidadeBrilhoBotoesHover || 0}px`);
+                    root.style.setProperty('--cor-brilho-botoes-hover', data.corBrilhoBotoesHover || '#ffffff');
+                    root.style.setProperty('--estilo-botoes', data.estiloBotoes || 'default');
+                    root.style.setProperty('--efeito-hover-botoes', data.efeitoHoverBotoes || 'none');
+                    root.style.setProperty('--estilo-cabecalho', data.estiloCabecalho || 'default');
+                    root.style.setProperty('--imagem-cabecalho', `url(${data.imagemCabecalhoUrl || ''})`);
+                    root.style.setProperty('--efeitos-hover-brightness', `brightness(${data.efeitosHoverBrightness || 1.1})`);
+                    root.style.setProperty('--cor-fundo-comentarios', data.corFundoComentarios || '#ffffff');
+                    root.style.setProperty('--cor-fundo-header', data.corFundoHeader || '#1E1E1E');
+                    root.style.setProperty('--cor-fundo-agendamentos', data.corFundoAgendamentos || '#ffffff');
+                    root.style.setProperty('--cor-fundo-botoes-agendamento', data.corFundoBotoesAgendamento || '#f0971c');
+                    root.style.setProperty('--cor-fundo-servicos', data.corFundoServicos || '#ffffff');
+                    root.style.setProperty('--cor-fundo-modal-agendamento', data.corFundoModalAgendamento || '#1E1E1E');
+                    root.style.setProperty('--cor-botao-modal-agendamento', data.corBotaoModalAgendamento || '#f0971c');
+                    root.style.setProperty('--cor-botao-bloqueado-modal-agendamento', data.corBotaoBloqueadoModalAgendamento || '#cccccc');
+
+                    // Aplicar modo noturno se ativado
+                    if (data.modoNoturno) {
+                        document.body.classList.add('modo-noturno');
+                    } else {
+                        document.body.classList.remove('modo-noturno');
+                    }
+
+                    // Aplicar estilo de scrollbar
+                    root.style.setProperty('--largura-scrollbar', data.estiloScrollbar === 'thin' ? '8px' : '16px');
+
+                    // Aplicar cor de fundo diretamente ao body
+                    document.body.style.backgroundColor = data.corFundo || '#ffffff';
+
+                    // Atualizar estilos específicos
+                    atualizarEstilosEspecificos(data);
+
+                    // Atualizar a imagem principal
+                    const imagemPrincipal = document.querySelector('#estabelecimentoLogo');
+                    if (imagemPrincipal && data.imagemPrincipalUrl) {
+                        imagemPrincipal.src = data.imagemPrincipalUrl;
+                        imagemPrincipal.classList.remove('hidden');
+                    }
+
+                    console.log("Estilos personalizados atualizados");
+                    
+                    // Carregar pop-ups após aplicar as personalizações
+                    carregarPopups(cnpj);
+
+                    // Chamar fetchDataByCNPJ após as personalizações
+                    chamarFetchDataByCNPJ();
+
+                    // Aplicar cor do container ao modal de agendamento
+                    const agendamentoModal = document.getElementById('agendamentoModal');
+                    if (agendamentoModal) {
+                        agendamentoModal.querySelector('div').style.backgroundColor = data.corContainer || '#1E1E1E';
+                    }
+
+                    // Aplicar novas personalizações
+                    document.body.classList.toggle('tema-escuro', !data.temaClaro);
+                    root.style.setProperty('--animacao-hover', data.animacaoHover || 'scale');
+                    root.style.setProperty('--estilo-lista', data.estiloLista || 'disc');
+                    root.style.setProperty('--transparencia-elementos', data.transparenciaElementos || 1);
+                    root.style.setProperty('--estilo-bordas', data.estiloBordas || 'solid');
+                    root.style.setProperty('--cor-fundo-cartoes', data.corFundoCartoes || '#ffffff');
+                    root.style.setProperty('--espacamento-elementos', `${data.espacamentoElementos || 16}px`);
+                    root.style.setProperty('--opacidade-texto', data.opacidadeTexto || 1);
+                    root.style.setProperty('--fonte-icones', data.fonteIcones || 'FontAwesome');
+                    root.style.setProperty('--tamanho-icones', `${data.tamanhoIcones || 16}px`);
+                    root.style.setProperty('--animacao-entrada', data.animacaoEntrada || 'fade');
+
+                    aplicarNovasPersonalizacoes();
+                } else {
+                    console.log("Nenhum documento encontrado para o CNPJ:", cnpj);
+                    // Carregar pop-ups mesmo se não houver personalizações
+                    carregarPopups(cnpj);
+                    // Chamar fetchDataByCNPJ mesmo se não houver personalizações
+                    chamarFetchDataByCNPJ();
+                }
+            }).catch((error) => {
+                console.error("Erro ao carregar personalizações:", error);
+                // Carregar pop-ups mesmo em caso de erro
+                carregarPopups(cnpj);
+                // Chamar fetchDataByCNPJ mesmo em caso de erro
+                chamarFetchDataByCNPJ();
+            });
+        }
+
+        function atualizarEstilosEspecificos(data) {
+            const style = document.createElement('style');
+            style.textContent = `
+                body, p, span, div, h1, h2, h3, h4, h5, h6, button, input, textarea, select,
+                .text-gray-300, .text-orange-custom, strong, ion-label, ion-text {
+                    color: var(--cor-texto) !important;
+                }
+                .bg-container-custom {
+                    background-color: var(--cor-container);
+                }
+                button, .agendar-btn, .btn-custom {
+                    background-color: var(--cor-botoes) !important;
+                    border-color: var(--cor-botoes) !important;
+                    color: var(--cor-texto) !important;
+                    font-size: var(--tamanho-fonte-botoes);
+                    border-radius: var(--arredondamento-bordas-botoes, var(--arredondamento-bordas));
+                    box-shadow: var(--sombra-elementos), 0 0 var(--intensidade-brilho-botoes) var(--cor-brilho-botoes);
+                    transition: var(--animacao-transicao);
+                }
+                button:hover, .agendar-btn:hover, .btn-custom:hover {
+                    filter: var(--efeitos-hover-brightness);
+                    box-shadow: var(--sombra-elementos), 0 0 var(--intensidade-brilho-botoes-hover) var(--cor-brilho-botoes-hover);
+                }
+                .bg-container-custom {
+                    background-color: var(--cor-container) !important;
+                    padding: var(--padding-container);
+                    margin: var(--margem-elementos);
+                    border-radius: var(--arredondamento-bordas);
+                }
+                nav {
+                    height: var(--altura-header);
+                }
+                .container {
+                    max-width: var(--largura-maxima-conteudo);
+                }
+                .grid-layout {
+                    display: grid;
+                    grid-template-columns: var(--layout-grid);
+                    gap: var(--margem-elementos);
+                }
+                ::-webkit-scrollbar {
+                    width: var(--largura-scrollbar);
+                }
+                ::-webkit-scrollbar-thumb {
+                    background-color: var(--cor-principal);
+                    border-radius: var(--arredondamento-bordas);
+                }
+                .modo-noturno {
+                    filter: invert(1) hue-rotate(180deg);
+                }
+                #agendamentoModal > div {
+                    background-color: var(--cor-container) !important;
+                }
+                .header-container {
+                    background: var(--background-cabecalho, var(--cor-container));
+                    background-size: cover;
+                    background-position: center;
+                }
+                #comentariosContainer {
+                    background-color: var(--cor-fundo-comentarios);
+                }
+                nav {
+                    background-color: var(--cor-fundo-header);
+                }
+                .agendamento-container {
+                    background-color: var(--cor-fundo-agendamentos);
+                }
+                .agendar-btn {
+                    background-color: var(--cor-fundo-botoes-agendamento) !important;
+                }
+                .services-carousel {
+                    background-color: var(--cor-fundo-servicos);
+                }
+                #agendamentoModal > div {
+                    background-color: var(--cor-fundo-modal-agendamento) !important;
+                }
+                #agendamentoModal .btn-custom {
+                    background-color: var(--cor-botao-modal-agendamento) !important;
+                }
+                #agendamentoModal .btn-custom:disabled,
+                #agendamentoModal .btn-custom.bloqueado {
+                    background-color: var(--cor-botao-bloqueado-modal-agendamento) !important;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Aplicar cor do texto diretamente aos elementos existentes
+            document.querySelectorAll('body, p, span, div, h1, h2, h3, h4, h5, h6, button, input, textarea, select, .text-gray-300, .text-orange-custom, strong, ion-label, ion-text').forEach(el => {
+                el.style.color = data.corTexto || '#000000';
+            });
+        }
+
+        // Adicione esta função para chamar fetchDataByCNPJ após as personalizações
+        function chamarFetchDataByCNPJ() {
+            console.log("Chamando fetchDataByCNPJ após personalizações");
+            fetchDataByCNPJ();
+        }
+    </script>
+    <script>
+        function aplicarEfeitoBrilhoEmTodosBotoes() {
+            const botoes = document.querySelectorAll('button, .agendar-btn, .btn-custom');
+            botoes.forEach(botao => {
+                botao.addEventListener('mouseenter', () => {
+                    botao.style.boxShadow = `var(--sombra-elementos), 0 0 var(--intensidade-brilho-botoes-hover) var(--cor-brilho-botoes-hover)`;
+                });
+
+                botao.addEventListener('mouseleave', () => {
+                    botao.style.boxShadow = `var(--sombra-elementos), 0 0 var(--intensidade-brilho-botoes) var(--cor-brilho-botoes)`;
+                });
+            });
+        }
+
+        // Chamar a função após o carregamento do DOM e após a aplicação das personalizações
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        aplicarEfeitoBrilhoEmTodosBotoes();
+                    }
+                });
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            // Aplicar o efeito inicialmente
+            aplicarEfeitoBrilhoEmTodosBotoes();
+        });
+    </script>
+    <script>
+        function atualizarEfeitoHoverBrightness(valor) {
+            document.documentElement.style.setProperty('--efeitos-hover-brightness', `brightness(${valor})`);
+        }
+
+        // Adicione esta função ao final do script
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... código existente ...
+
+            // Adicione um ouvinte de eventos para o controle deslizante (se existir na página)
+            const brightnessSlider = document.getElementById('brightnessSlider');
+            if (brightnessSlider) {
+                brightnessSlider.addEventListener('input', (event) => {
+                    atualizarEfeitoHoverBrightness(event.target.value);
+                });
+            }
+        });
+    </script>
+    <script>
+        function carregarPopups(cnpj) {
+            console.log("Carregando pop-up para o CNPJ:", cnpj);
+            db.collection("users").where("cnpj", "==", cnpj).get().then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0];
+                    const userData = userDoc.data();
+                    if (userData && userData.popups && Array.isArray(userData.popups) && userData.popups.length > 0) {
+                        const popupData = userData.popups[0]; // Pega apenas o primeiro pop-up
+                        if (popupData) {
+                            console.log("Pop-up encontrado:", popupData);
+                            exibirPopup(popupData);
+                        } else {
+                            console.log("O pop-up é inválido");
+                        }
+                    } else {
+                        console.log("Nenhum pop-up encontrado para este CNPJ");
+                    }
+                } else {
+                    console.log("Nenhum usuário encontrado com este CNPJ");
+                }
+            }).catch((error) => {
+                console.error("Erro ao carregar pop-up:", error);
+            });
+        }
+
+        function exibirPopup(popupData) {
+            console.log("Exibindo pop-up:", popupData);
+            const popupContainer = document.getElementById('popupContainer');
+            
+            // Remover qualquer pop-up existente
+            while (popupContainer.firstChild) {
+                popupContainer.removeChild(popupContainer.firstChild);
+            }
+
+            const popupElement = document.createElement('div');
+            popupElement.className = 'popup';
+            popupElement.id = 'popup-' + Date.now();
+
+            const defaultPopup = {
+                titulo: 'Novo Pop-up',
+                conteudo: 'Conteúdo do pop-up',
+                tipoFundo: 'cor',
+                corFundo: '#ffffff',
+                corGradiente1: '#ffffff',
+                corGradiente2: '#000000',
+                imagemFundo: '',
+                largura: '300px',
+                altura: '200px',
+                corBorda: '#000000',
+                espessuraBorda: 1,
+                estiloBorda: 'solid',
+                sombra: '0 0 10px rgba(0,0,0,0.5)',
+                arredondamentoBordas: 5,
+                transparenciaFundo: 1,
+                texturaDeFundo: 'none',
+                corCabecalho: '#f0f0f0',
+                espacamentoInterno: 20,
+                espacamentoExterno: 0,
+                corAcento: '#007bff',
+                fonteTitulo: 'Arial',
+                fonteTexto: 'Arial',
+                tamanhoFonteTitulo: 24,
+                tamanhoFonteCorpo: 16,
+                corTexto: '#000000',
+                efeitoTexto: 'none',
+                alinhamentoTexto: 'left',
+                textoNegrito: false,
+                textoItalico: false,
+                botoes: [{
+                    texto: 'Fechar',
+                    corFundo: '#007bff',
+                    corTexto: '#ffffff',
+                    formato: 'rounded',
+                    sombra: '0 2px 5px rgba(0,0,0,0.2)',
+                    efeitoHover: 'scale',
+                    largura: 100,
+                    altura: 40,
+                    icone: '',
+                    efeitoClique: 'none'
+                }],
+                espacamentoBotoes: 10,
+                fecharComCliqueFora: true,
+                fecharComEsc: true,
+                animacaoEntrada: 'fade',
+                animacaoSaida: 'fade',
+                duracaoExibicao: 0,
+                conteudoInterativo: false,
+                linksClicaveis: true,
+                incluirFormulario: false,
+                notificacaoTemporizada: false,
+                imagemCabecalho: '',
+                estiloBotaoFechar: 'default',
+                posicaoBotaoFechar: 'top-right',
+                listasPersonalizadas: false,
+                secoesAcessiveis: false,
+                coresDestaque: '#ff0000',
+                ajudaContextual: false,
+                efeitoRolar: 'none',
+                opcaoCompartilhamento: false
+            };
+
+            const mergedPopup = { ...defaultPopup, ...popupData };
+
+            let popupStyle = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: ${mergedPopup.largura};
+                height: ${mergedPopup.altura};
+                padding: ${mergedPopup.espacamentoInterno}px;
+                margin: ${mergedPopup.espacamentoExterno}px;
+                border: ${mergedPopup.espessuraBorda}px ${mergedPopup.estiloBorda} ${mergedPopup.corBorda};
+                border-radius: ${mergedPopup.arredondamentoBordas}px;
+                box-shadow: ${mergedPopup.sombra};
+                z-index: 1000;
+                font-family: ${mergedPopup.fonteTexto};
+                text-align: ${mergedPopup.alinhamentoTexto};
+                overflow-y: auto;
+                opacity: ${mergedPopup.transparenciaFundo};
+            `;
+
+            switch (mergedPopup.tipoFundo) {
+                case 'gradiente':
+                    popupStyle += `background: linear-gradient(${mergedPopup.corGradiente1}, ${mergedPopup.corGradiente2});`;
+                    break;
+                case 'imagem':
+                    popupStyle += `background-image: url('${mergedPopup.imagemFundo}'); background-size: cover;`;
+                    break;
+                default:
+                    popupStyle += `background-color: ${mergedPopup.corFundo};`;
+            }
+
+            if (mergedPopup.texturaDeFundo !== 'none') {
+                popupStyle += `background-image: url('textures/${mergedPopup.texturaDeFundo}.png');`;
+            }
+
+            popupElement.style.cssText = popupStyle;
+
+            let popupContent = `
+                <div class="popup-header" style="background-color: ${mergedPopup.corCabecalho};">
+                    <h2 style="
+                        font-family: ${mergedPopup.fonteTitulo};
+                        font-size: ${mergedPopup.tamanhoFonteTitulo}px;
+                        color: ${mergedPopup.corTexto};
+                        font-weight: ${mergedPopup.textoNegrito ? 'bold' : 'normal'};
+                        font-style: ${mergedPopup.textoItalico ? 'italic' : 'normal'};
+                        text-shadow: ${mergedPopup.efeitoTexto === 'shadow' ? '2px 2px 2px rgba(0,0,0,0.3)' : 'none'};
+                    ">${mergedPopup.titulo}</h2>
+                    ${mergedPopup.imagemCabecalho ? `<img src="${mergedPopup.imagemCabecalho}" alt="Cabeçalho" style="max-width: 100%;">` : ''}
+                    ${mergedPopup.estiloBotaoFechar !== 'none' ? `
+                        <button class="popup-close-btn" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 50%;
+                            background-color: var(--cor-botao-fechar, #f0971c);
+                            color: var(--cor-texto-botao-fechar, #ffffff);
+                            border: none;
+                            font-size: var(--tamanho-fonte-botao-fechar, 18px);
+                            font-weight: bold;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        ">×</button>
+                    ` : ''}
+                </div>
+                <div class="popup-content" style="
+                    font-size: ${mergedPopup.tamanhoFonteCorpo}px;
+                    color: ${mergedPopup.corTexto};
+                ">
+                    ${mergedPopup.conteudo}
+                </div>
+                <div class="popup-buttons" style="margin-top: ${mergedPopup.espacamentoBotoes}px;">
+                    ${mergedPopup.botoes.map(botao => `
+                        <button style="
+                            background-color: ${botao.corFundo};
+                            color: ${botao.corTexto};
+                            border: none;
+                            padding: 10px 20px;
+                            margin: 0 ${mergedPopup.espacamentoBotoes / 2}px;
+                            border-radius: ${botao.formato === 'rounded' ? '20px' : '5px'};
+                            box-shadow: ${botao.sombra};
+                            cursor: pointer;
+                            width: ${botao.largura}px;
+                            height: ${botao.altura}px;
+                            transition: all 0.3s ease;
+                        "
+                        onmouseover="this.style.transform='${botao.efeitoHover === 'scale' ? 'scale(1.1)' : 'none'}'"
+                        onmouseout="this.style.transform='scale(1)'"
+                        onclick="${botao.efeitoClique === 'ripple' ? 'createRipple(event)' : ''}">
+                            ${botao.icone ? `<i class="${botao.icone}"></i> ` : ''}${botao.texto}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+
+            popupElement.innerHTML = popupContent;
+
+            console.log("Pop-up criado com ID:", popupElement.id);
+
+            // Adicionar evento de clique para fechar o pop-up
+            if (mergedPopup.fecharComCliqueFora) {
+                popupElement.addEventListener('click', (event) => {
+                    if (event.target === popupElement) {
+                        console.log("Clique fora do pop-up detectado");
+                        fecharPopup(popupElement);
+                    }
+                }, { once: true });
+            }
+
+            // Adicionar evento de clique para o botão de fechar
+            const closeButton = popupElement.querySelector('.popup-close-btn');
+            if (closeButton) {
+                closeButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    console.log("Botão de fechar clicado");
+                    fecharPopup(popupElement);
+                }, { once: true });
+            }
+
+            // Adicionar evento de tecla ESC para fechar o pop-up
+            if (mergedPopup.fecharComEsc) {
+                const escListener = function(event) {
+                    if (event.key === 'Escape') {
+                        console.log("Tecla ESC pressionada");
+                        fecharPopup(popupElement);
+                        document.removeEventListener('keydown', escListener);
+                    }
+                };
+                document.addEventListener('keydown', escListener);
+            }
+
+            popupElement.dataset.animation = mergedPopup.animacaoEntrada || 'fade';
+            popupContainer.appendChild(popupElement);
+
+            // Forçar um reflow para garantir que a animação seja aplicada
+            void popupElement.offsetWidth;
+
+            popupElement.style.animationName = popupElement.dataset.animation;
+
+            // Configurar duração de exibição apenas se for maior que zero
+            if (mergedPopup.duracaoExibicao && mergedPopup.duracaoExibicao > 0) {
+                console.log(`Configurando fechamento automático em ${mergedPopup.duracaoExibicao}ms`);
+                setTimeout(() => {
+                    console.log(`Tentando fechar pop-up após ${mergedPopup.duracaoExibicao}ms`);
+                    fecharPopup(popupElement);
+                }, mergedPopup.duracaoExibicao);
+            } else {
+                console.log("Sem fechamento automático configurado");
+            }
+
+            // Observador de mutação para detectar remoção do pop-up
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList' && !popupContainer.contains(popupElement)) {
+                        console.log(`Pop-up ${popupElement.id} removido do DOM`);
+                        observer.disconnect();
+                    }
+                });
+            });
+            observer.observe(popupContainer, { childList: true });
+
+            if (mergedPopup.opcaoCompartilhamento) {
+                const shareButton = document.createElement('button');
+                shareButton.textContent = 'Compartilhar';
+                shareButton.onclick = () => {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: mergedPopup.titulo,
+                            text: mergedPopup.conteudo,
+                            url: window.location.href
+                        }).then(() => {
+                            console.log('Conteúdo compartilhado com sucesso');
+                        }).catch((error) => {
+                            console.log('Erro ao compartilhar', error);
+                        });
+                    } else {
+                        console.log('Web Share API não suportada');
+                    }
+                };
+                popupElement.querySelector('.popup-buttons').appendChild(shareButton);
+            }
+
+            if (mergedPopup.ajudaContextual) {
+                const helpIcon = document.createElement('span');
+                helpIcon.innerHTML = '?';
+                helpIcon.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    cursor: pointer;
+                    font-weight: bold;
+                `;
+                helpIcon.onclick = () => alert('Ajuda contextual: ' + mergedPopup.ajudaContextual);
+                popupElement.appendChild(helpIcon);
+            }
+
+            if (mergedPopup.efeitoRolar === 'smooth') {
+                popupElement.style.scrollBehavior = 'smooth';
+            } else if (mergedPopup.efeitoRolar === 'fade') {
+                const content = popupElement.querySelector('.popup-content');
+                content.style.maskImage = 'linear-gradient(to bottom, black 80%, transparent 100%)';
+                content.style.webkitMaskImage = 'linear-gradient(to bottom, black 80%, transparent 100%)';
+            }
+        }
+
+        function fecharPopup(element) {
+            if (!element || element.classList.contains('closing')) {
+                console.log("Pop-up já está fechando ou não existe");
+                return;
+            }
+
+            console.log(`Iniciando fechamento do pop-up ${element.id}`);
+            element.classList.add('closing');
+            
+            let animacaoSaida = element.dataset.animation === 'zoomIn' ? 'zoomOut' : 'fadeOut';
+            element.style.animationName = animacaoSaida;
+
+            // Remover todos os event listeners
+            const newElement = element.cloneNode(true);
+            element.parentNode.replaceChild(newElement, element);
+
+            setTimeout(() => {
+                if (newElement.parentNode) {
+                    console.log(`Removendo pop-up ${newElement.id} do DOM`);
+                    newElement.parentNode.removeChild(newElement);
+                } else {
+                    console.log(`Pop-up ${newElement.id} já foi removido`);
+                }
+            }, 500); // Duração da animação
+        }
+
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+            circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+            circle.classList.add('ripple');
+
+            const ripple = button.getElementsByClassName('ripple')[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cnpj = urlParams.get('cnpj');
+            if (cnpj) {
+                carregarPopups(cnpj);
+            }
+        });
+    </script>
+
+    <script>
+        function atualizarBotoesAgendamento() {
+            const agora = new Date();
+            const botoesAgendamento = document.querySelectorAll('#agendamentoModal .btn-custom');
+            botoesAgendamento.forEach(botao => {
+                const horario = new Date(botao.getAttribute('data-horario'));
+                if (horario < agora) {
+                    botao.classList.add('bloqueado');
+                    botao.disabled = true;
+                } else {
+                    botao.classList.remove('bloqueado');
+                    botao.disabled = false;
+                }
+            });
+        }
+
+        // Chame esta função quando o modal de agendamento for aberto
+        function abrirModalAgendamento() {
+            // ... código existente ...
+            atualizarBotoesAgendamento();
+        }
+
+        // Atualize os botões a cada minuto
+        setInterval(atualizarBotoesAgendamento, 60000);
     </script>
 </body>
 
