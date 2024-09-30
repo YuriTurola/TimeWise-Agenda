@@ -8,43 +8,47 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
+function toggleDropdown() {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    dropdownMenu.classList.toggle('hidden');
+}
+
+function closeDropdown(event) {
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const menuButton = document.getElementById('menuButton');
+    if (!menuButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.classList.add('hidden');
+    }
+}
+
 function showUserProfile(user) {
     const userProfile = document.getElementById('userProfile');
     const userName = document.getElementById('userName');
-    
-    db.collection("usersweb").doc(user.uid).get().then((doc) => {
-        if (doc.exists) {
-            userName.textContent = `Olá, ${doc.data().name}`;
-        } else {
-            userName.textContent = `Olá, ${user.email}`;
-        }
-    }).catch((error) => {
-        console.log("Erro ao buscar dados do usuário:", error);
-    });
-
     userProfile.classList.remove('hidden');
+    userName.textContent = user.displayName || user.email;
+
+    const menuButton = document.getElementById('menuButton');
+    menuButton.addEventListener('click', toggleDropdown);
+
+    document.addEventListener('click', closeDropdown);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const userDropdown = document.getElementById('userDropdown');
-    const dropdownMenu = document.getElementById('dropdownMenu');
+function hideUserProfile() {
+    const userProfile = document.getElementById('userProfile');
+    userProfile.classList.add('hidden');
 
-    userDropdown.addEventListener('click', () => {
-        dropdownMenu.classList.toggle('hidden');
-    });
+    const menuButton = document.getElementById('menuButton');
+    menuButton.removeEventListener('click', toggleDropdown);
 
-    // Fechar o dropdown quando clicar fora dele
-    document.addEventListener('click', (event) => {
-        if (!userDropdown.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.classList.add('hidden');
-        }
-    });
+    document.removeEventListener('click', closeDropdown);
+}
 
-    document.getElementById('logoutButton').addEventListener('click', () => {
-        auth.signOut().then(() => {
-            window.location.href = '../login/LoginTimeWise.html';
-        }).catch((error) => {
-            console.error('Erro ao fazer logout:', error);
-        });
+document.getElementById('logoutButton').addEventListener('click', () => {
+    firebase.auth().signOut().then(() => {
+        console.log('Usuário deslogado');
+        hideUserProfile();
+        redirecionarParaLogin();
+    }).catch((error) => {
+        console.error('Erro ao fazer logout:', error);
     });
 });
