@@ -144,6 +144,56 @@ resetPasswordForm.addEventListener('submit', (e) => {
         });
 });
 
+// Adicione esta linha após a inicialização do Firebase
+const provider = new firebase.auth.GoogleAuthProvider();
+
+// Adicione este evento de clique para o botão de login do Google
+document.getElementById('googleLogin').addEventListener('click', () => {
+    firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+            const user = result.user;
+            // Primeiro, verifique se já existe um usuário com este e-mail
+            return db.collection('usersweb').where('email', '==', user.email).get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        // Se não existir um usuário com este e-mail, crie um novo documento
+                        return db.collection('usersweb').doc(user.uid).set({
+                            name: user.displayName,
+                            email: user.email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } else {
+                        // Se já existir um usuário com este e-mail, atualize o UID se necessário
+                        const existingUser = querySnapshot.docs[0];
+                        if (existingUser.id !== user.uid) {
+                            // O usuário já existe, mas com um UID diferente
+                            // Atualize o documento existente com o novo UID
+                            return db.collection('usersweb').doc(existingUser.id).delete()
+                                .then(() => {
+                                    return db.collection('usersweb').doc(user.uid).set({
+                                        ...existingUser.data(),
+                                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                });
+                        } else {
+                            // O usuário já existe e o UID é o mesmo, apenas atualize o último login
+                            return db.collection('usersweb').doc(user.uid).update({
+                                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    }
+                });
+        })
+        .then(() => {
+            showMessage("Login com Google bem-sucedido!", "#4CAF50");
+            // Redirecionar para a página de estabelecimento
+            window.location.href = 'estabelecimento.html';
+        })
+        .catch((error) => {
+            showMessage("Erro no login com Google: " + error.message, "#ff4444");
+        });
+});
+
 // Handle authentication state changes
 firebase.auth().onAuthStateChanged((user) => {
     const currentPage = window.location.pathname;
