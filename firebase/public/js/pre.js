@@ -47,9 +47,10 @@ function fetchDataByCNPJ() {
         const userUid = userSnapshot.docs[0].id;
         const establishmentName = userData.establishmentName || 'N/A';
         const userEmail = userData.email || 'N/A';
-          const userAddress = userData.address || 'N/A';
+        const userPhone = userData.phone || 'N/A';
         const logoUrl = userData.logoUrl || '';
         const personalizacao = userData.personalizacao || {};
+        const address = userData.address || 'Endereço não disponível'; // Buscar o endereço
 
         dataList.innerHTML = `
             <div class="text-center mb-8">
@@ -57,9 +58,10 @@ function fetchDataByCNPJ() {
                 <h2 class="text-5xl font-extrabold" style="color: var(--cor-texto);">${establishmentName}</h2>
             </div>
             <div class="bg-container-custom p-6 rounded-lg shadow-lg mb-8">
-             
+                <p class="mb-2"><strong style="color: var(--cor-texto);"><i class="fas fa-id-card mr-2"></i>CNPJ:</strong> <span style="color: var(--cor-texto);">${cnpj}</span></p>
                 <p class="mb-2"><strong style="color: var(--cor-texto);"><i class="fas fa-envelope mr-2"></i>Email:</strong> <span style="color: var(--cor-texto);">${userEmail}</span></p>
-               <p class="mb-2"><strong style="color: var(--cor-texto);"><i class="fa-solid fa-location-dot"></i> Endereço:</strong> <span style="color: var(--cor-texto);">${userAddress}</span></p>
+                <p class="mb-2"><strong style="color: var(--cor-texto);"><i class="fas fa-phone mr-2"></i>Telefone:</strong> <span style="color: var(--cor-texto);">${userPhone}</span></p>
+                <p><strong style="color: var(--cor-texto);"><i class="fas fa-map-marker-alt mr-2"></i>Endereço:</strong> <span style="color: var(--cor-texto);">${address}</span></p>
             </div>
         `;
 
