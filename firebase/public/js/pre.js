@@ -176,37 +176,38 @@ function buscarComentarios(cnpj) {
             }
         });
 
-        if (comentariosCarrossel.length === 0) {
-            comentariosList.innerHTML = '<p style="color: var(--cor-texto);">Nenhum comentário encontrado.</p>';
-            return;
-        }
-
-        comentariosList.innerHTML = `
-            <div id="comentarioCarrossel" class="relative overflow-hidden w-full">
-                <div id="comentarioSlider" class="flex transition-transform duration-500 ease-in-out">
-                    ${comentariosCarrossel.map((comentario, index) => `
-                        <div class="comentario-item w-1/4 flex-shrink-0 px-2">
-                            <div class="bg-container-custom p-4 rounded-lg h-full overflow-y-auto">
-                                <div class="flex items-center mb-2">
-                                    <img src="${comentario.userPhotoURL || 'https://via.placeholder.com/40'}" alt="Foto do usuário" class="w-10 h-10 rounded-full mr-3">
-                                    <div>
-                                        <p class="font-bold" style="color: var(--cor-texto);">${comentario.userName || 'Usuário Anônimo'}</p>
-                                        <p class="text-sm" style="color: var(--cor-texto);">${comentario.data}</p>
+        if (comentariosCarrossel.length > 0) {
+            comentariosList.innerHTML = `
+                <div id="comentarioCarrossel" class="relative overflow-hidden w-full">
+                    <div id="comentarioSlider" class="flex flex-wrap">
+                        ${comentariosCarrossel.map((comentario, index) => `
+                            <div class="comentario-item flex-shrink-0 px-2 mb-4">
+                                <div class="bg-container-custom p-4 rounded-lg h-full overflow-y-auto">
+                                    <div class="flex items-center mb-2">
+                                        <img src="${comentario.userPhotoURL || 'https://via.placeholder.com/40'}" alt="Foto do usuário" class="w-8 h-8 rounded-full mr-2">
+                                        <div>
+                                            <p class="font-bold text-sm" style="color: var(--cor-texto);">${comentario.userName || 'Usuário Anônimo'}</p>
+                                            <p class="text-xs" style="color: var(--cor-texto);">${comentario.data}</p>
+                                        </div>
                                     </div>
+                                    <p class="text-sm" style="color: var(--cor-texto);">${comentario.texto}</p>
+                                    <p class="text-xs mt-2" style="color: var(--cor-texto);"><strong>Funcionário:</strong> ${comentario.workerName}</p>
+                                    <p class="text-xs" style="color: var(--cor-texto);"><strong>Serviço:</strong> ${comentario.serviceName}</p>
                                 </div>
-                                <p style="color: var(--cor-texto);">${comentario.texto}</p>
-                                <p class="text-sm" style="color: var(--cor-texto);"><strong>Funcionário:</strong> ${comentario.workerName}</p>
-                                <p class="text-sm" style="color: var(--cor-texto);"><strong>Serviço:</strong> ${comentario.serviceName}</p>
                             </div>
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
 
-        if (comentariosCarrossel.length > 4) {
-            iniciarCarrosselAutomatico();
-            iniciarArrasteCarrossel();
+            // Remover a funcionalidade de carrossel automático para dispositivos móveis
+            if (window.innerWidth <= 768) {
+                clearInterval(carrosselInterval);
+            } else {
+                iniciarCarrosselAutomatico();
+            }
+        } else {
+            comentariosList.innerHTML = '<p class="text-sm" style="color: var(--cor-texto);">Nenhum comentário encontrado.</p>';
         }
 
     }).catch((error) => {
@@ -300,7 +301,7 @@ function agendarServico(serviceId, serviceName) {
                     const proximaData = getProximaData(day.name);
                     if (proximaData >= hoje) {
                         const dataFormatada = formatarData(proximaData);
-                        daysHtml += `<button onclick="mostrarHorarios('${day.name}', '${day.startTime}', '${day.endTime}', '${dataFormatada}')" class="btn-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded mr-2 mb-2 transition duration-300 hover:shadow-lg">${day.label} - ${dataFormatada}</button>`;
+                        daysHtml += `<button onclick="selecionarData(this, '${day.name}', '${day.startTime}', '${day.endTime}', '${dataFormatada}')" class="btn-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded mr-2 mb-2 transition duration-300 hover:shadow-lg">${day.label} - ${dataFormatada}</button>`;
                     }
                 }
             });
@@ -313,6 +314,22 @@ function agendarServico(serviceId, serviceName) {
         document.getElementById('diasDisponiveis').innerHTML = '<p style="color: var(--cor-erro);">Erro ao buscar agendamentos.</p>';
         document.getElementById('horariosDisponiveis').innerHTML = '';
     });
+}
+
+function selecionarData(button, day, startTime, endTime, dataFormatada) {
+    // Remover a seleção de todos os botões de data
+    const dateButtons = document.querySelectorAll('#diasDisponiveis button');
+    dateButtons.forEach(btn => {
+        btn.classList.remove('bg-green-700');
+        btn.classList.add('btn-custom', 'hover:bg-orange-600');
+    });
+
+    // Destacar o botão selecionado
+    button.classList.remove('btn-custom', 'hover:bg-orange-600');
+    button.classList.add('bg-green-700');
+
+    // Chamar a função para mostrar os horários
+    mostrarHorarios(day, startTime, endTime, dataFormatada);
 }
 
 function getProximaData(diaDaSemana) {
@@ -335,7 +352,9 @@ function mostrarHorarios(day, startTime, endTime, dataFormatada) {
     currentStartTime = startTime;
     currentEndTime = endTime;
     const horariosDisponiveis = document.getElementById('horariosDisponiveis');
-    horariosDisponiveis.innerHTML = `<h3 class="text-xl font-bold mb-2" style="color: var(--cor-texto);"><i class="far fa-clock mr-2"></i>Horários Disponíveis para ${dataFormatada}:</h3>`;
+    horariosDisponiveis.innerHTML = `<h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="far fa-clock mr-2"></i>Horários Disponíveis para ${dataFormatada}:</h3>`;
+    const horariosContainer = document.createElement('div');
+    horariosContainer.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2';
 
     const horarios = gerarHorarios(startTime, endTime);
     const agora = new Date();
@@ -392,24 +411,19 @@ function mostrarHorarios(day, startTime, endTime, dataFormatada) {
                 } else {
                     button.className = 'btn-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded mr-2 mb-2 transition duration-300 hover:shadow-lg';
                     button.onclick = () => {
-                        const timeButtons = document.querySelectorAll('#horariosDisponiveis button');
-                        timeButtons.forEach(btn => {
-                            btn.classList.remove('bg-green-700');
-                            btn.classList.add('btn-custom');
-                        });
-                        button.classList.remove('btn-custom', 'hover:bg-orange-600');
-                        button.classList.add('bg-green-700');
                         selecionarHorario(button, horario);
                         mostrarFuncionarios();
                     };
                 }
                 
-                horariosDisponiveis.appendChild(button);
+                horariosContainer.appendChild(button);
             });
 
-            if (horariosDisponiveis.children.length === 1) {
-                horariosDisponiveis.innerHTML += '<p style="color: var(--cor-texto);">Nenhum horário disponível para este dia.</p>';
+            if (horariosContainer.children.length === 0) {
+                horariosContainer.innerHTML += '<p style="color: var(--cor-texto);">Nenhum horário disponível para este dia.</p>';
             }
+
+            horariosDisponiveis.appendChild(horariosContainer);
         })
         .catch((error) => {
             console.error("Erro ao buscar agendamentos existentes: ", error);
@@ -432,7 +446,9 @@ function traduzirDiaParaPortugues(dia) {
 
 function mostrarFuncionarios() {
     const workersContainer = document.getElementById('workersDisponiveis');
-    workersContainer.innerHTML = '';
+    workersContainer.innerHTML = '<h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="fas fa-user-tie mr-2"></i>Funcionários Disponíveis:</h3>';
+    const workerButtons = document.createElement('div');
+    workerButtons.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2';
 
     db.collection("workers").where("cnpj", "==", selectedCnpj).get().then((workerSnapshot) => {
         if (workerSnapshot.empty) {
@@ -440,15 +456,11 @@ function mostrarFuncionarios() {
             return;
         }
 
-        workersContainer.innerHTML = '<h3 class="text-xl font-bold mb-2" style="color: var(--cor-texto);"><i class="fas fa-user-tie mr-2"></i>Funcionários Disponíveis:</h3>';
-        const workerButtons = document.createElement('div');
-        workerButtons.className = 'flex flex-wrap';
-
         workerSnapshot.forEach((doc) => {
             const workerData = doc.data();
             const workerButton = document.createElement('button');
             workerButton.className = 'flex items-center bg-dark-surface text-white font-bold py-2 px-4 rounded mb-2 mr-2 transition duration-300 hover:shadow-lg btn-custom';
-            workerButton.onclick = () => selecionarFuncionario(workerData.id);
+            workerButton.onclick = () => selecionarFuncionario(workerButton, workerData.id);
             workerButton.setAttribute('data-worker-id', workerData.id);
             
             workerButton.innerHTML = `
@@ -484,25 +496,24 @@ function selecionarHorario(button, horario) {
     const timeButtons = document.querySelectorAll('#horariosDisponiveis button');
     timeButtons.forEach(btn => {
         btn.classList.remove('bg-green-700');
-        btn.classList.add('btn-custom');
+        btn.classList.add('btn-custom', 'hover:bg-orange-600');
     });
     button.classList.remove('btn-custom', 'hover:bg-orange-600');
     button.classList.add('bg-green-700');
 }
 
-function selecionarFuncionario(workerId) {
+function selecionarFuncionario(button, workerId) {
     selectedWorkerId = workerId;
     console.log("Funcionário selecionado:", selectedWorkerId);
 
     const workerButtons = document.querySelectorAll('#workersDisponiveis button');
     workerButtons.forEach(btn => {
         btn.classList.remove('bg-green-700');
+        btn.classList.add('btn-custom');
     });
 
-    const selectedButton = document.querySelector(`#workersDisponiveis button[data-worker-id="${workerId}"]`);
-    if (selectedButton) {
-        selectedButton.classList.add('bg-green-700');
-    }
+    button.classList.remove('btn-custom');
+    button.classList.add('bg-green-700');
 
     document.getElementById('confirmButton').disabled = false;
 }
@@ -816,13 +827,13 @@ function exibirPopup(popupData) {
 
 function createServiceCard(docId, serviceData) {
     const serviceCard = document.createElement('div');
-    serviceCard.className = 'bg-container-custom p-4 rounded-lg shadow-lg hover-grow fade-in';
+    serviceCard.className = 'bg-container-custom p-4 rounded-lg shadow-lg hover-grow fade-in mb-4';
     serviceCard.innerHTML = `
-        <h3 class="text-xl font-bold mb-3" style="color: var(--cor-texto);"><i class="fas fa-cut mr-2"></i>${serviceData.name || 'N/A'}</h3>
-        <p class="text-sm mb-3" style="color: var(--cor-texto);">${serviceData.description || 'N/A'}</p>
-        <p class="font-bold mb-3" style="color: var(--cor-texto);"><i class="fas fa-dollar-sign mr-2"></i>R$ ${serviceData.price || 'N/A'}</p>
-        <img src="${serviceData.imageUrl || ''}" alt="Imagem do Serviço" class="w-full h-40 object-cover rounded-lg mb-3">
-        <button onclick="agendarServico('${docId}', '${serviceData.name}')" class="agendar-btn text-white font-bold py-2 px-4 rounded w-full transition duration-300 hover:shadow-lg">
+        <h3 class="text-lg font-bold mb-2" style="color: var(--cor-texto);"><i class="fas fa-cut mr-2"></i>${serviceData.name || 'N/A'}</h3>
+        <p class="text-sm mb-2" style="color: var(--cor-texto);">${serviceData.description || 'N/A'}</p>
+        <p class="font-bold mb-2" style="color: var(--cor-texto);"><i class="fas fa-dollar-sign mr-2"></i>R$ ${serviceData.price || 'N/A'}</p>
+        <img src="${serviceData.imageUrl || ''}" alt="Imagem do Serviço" class="w-full h-32 object-cover rounded-lg mb-2">
+        <button onclick="agendarServico('${docId}', '${serviceData.name}')" class="agendar-btn text-white font-bold py-2 px-4 rounded w-full transition duration-300 hover:shadow-lg text-sm">
             <i class="fas fa-calendar-plus mr-2"></i>Agendar
         </button>
     `;
@@ -836,48 +847,46 @@ function initializeCarousel() {
         return;
     }
 
-    const wrapper = carousel.querySelector('.carousel-wrapper');
     const content = carousel.querySelector('.carousel-content');
-    const prev = carousel.querySelector('.carousel-prev');
-    const next = carousel.querySelector('.carousel-next');
     const items = content.children;
-    let position = 0;
 
     if (items.length === 0) {
         console.warn('Nenhum item encontrado no carrossel');
         return;
     }
 
-    // Mostrar botões de navegação apenas se houver mais de 4 itens
-    if (items.length > 4) {
-        prev.style.display = 'block';
-        next.style.display = 'block';
-    }
+    // Remover botões de navegação e permitir rolagem horizontal
+    const prev = carousel.querySelector('.carousel-prev');
+    const next = carousel.querySelector('.carousel-next');
+    if (prev) prev.remove();
+    if (next) next.remove();
 
-    prev.addEventListener('click', () => {
-        if (position > 0) {
-            position--;
-            updateCarousel();
-        }
+    // Adicionar evento de rolagem suave
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    content.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - content.offsetLeft;
+        scrollLeft = content.scrollLeft;
     });
 
-    next.addEventListener('click', () => {
-        if (position < Math.ceil(items.length / 4) - 1) {
-            position++;
-            updateCarousel();
-        }
+    content.addEventListener('mouseleave', () => {
+        isDown = false;
     });
 
-    function updateCarousel() {
-        content.style.transform = `translateX(-${position * 100}%)`;
-        
-        // Atualizar visibilidade dos botões
-        prev.style.display = position > 0 ? 'block' : 'none';
-        next.style.display = position < Math.ceil(items.length / 4) - 1 ? 'block' : 'none';
-    }
+    content.addEventListener('mouseup', () => {
+        isDown = false;
+    });
 
-    // Inicializa a posição do carrossel
-    updateCarousel();
+    content.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - content.offsetLeft;
+        const walk = (x - startX) * 2;
+        content.scrollLeft = scrollLeft - walk;
+    });
 }
 
 function fecharPopup(element) {
