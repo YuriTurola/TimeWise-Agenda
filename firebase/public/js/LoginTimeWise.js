@@ -71,11 +71,12 @@ loginForm.addEventListener('submit', (e) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            showMessage("Login bem-sucedido!", "#4CAF50"); // Success message in green
-            // Redirect handled by onAuthStateChanged
+            showMessage("Login bem-sucedido!", "#4CAF50");
+            // Redirecionar para a página de estabelecimento
+            window.location.href = 'estabelecimento.html';
         })
         .catch((error) => {
-            showMessage("Erro no login: " + error.message, "#ff4444"); // Error message in red
+            showMessage("Erro no login: " + error.message, "#ff4444");
         });
 });
 
@@ -91,21 +92,26 @@ registerForm.addEventListener('submit', (e) => {
             const user = userCredential.user;
             sessionStorage.setItem('isNewUser', true);
 
-            // Save user data in Firestore
-            return db.collection('usersweb').doc(user.uid).set({
-                name: name,
-                email: user.email,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            // Atualizar o perfil do usuário com o nome
+            return user.updateProfile({
+                displayName: name
+            }).then(() => {
+                // Salvar dados do usuário no Firestore
+                return db.collection('usersweb').doc(user.uid).set({
+                    name: name,
+                    email: user.email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
             });
         })
         .then(() => {
-            showMessage("Cadastro realizado com sucesso! Agora faça login.", "#4CAF50"); // Success message in green
+            showMessage("Cadastro realizado com sucesso! Agora faça login.", "#4CAF50");
 
-            // Sign out the user to prevent automatic login after registration
+            // Desconectar o usuário para evitar login automático após o registro
             return firebase.auth().signOut();
         })
         .then(() => {
-            // Show login form after signing out
+            // Mostrar o formulário de login após desconectar
             registerSection.style.display = 'none';
             loginSection.style.display = 'block';
         })
@@ -196,30 +202,20 @@ document.getElementById('googleLogin').addEventListener('click', () => {
 
 // Handle authentication state changes
 firebase.auth().onAuthStateChanged((user) => {
-    const currentPage = window.location.pathname;
-
     if (user) {
-        // Check if the user is newly registered
-        const isNewUser = sessionStorage.getItem('isNewUser');
-
-        if (isNewUser) {
-            sessionStorage.removeItem('isNewUser');
-            // Show login form for newly registered users
-            registerSection.style.display = 'none';
-            loginSection.style.display = 'block';
-        } else {
-            // Redirect logged-in users to "estabelecimento.html"
-            if (currentPage !== '/estabelecimento.html') {
-                window.location.href = 'estabelecimento.html';
-            }
-        }
+        // Usuário está logado
+        console.log("Usuário logado:", user.email);
+        // Você pode adicionar lógica adicional aqui se necessário
     } else {
-        // If no user is logged in, display the login form
+        // Usuário não está logado
+        console.log("Nenhum usuário logado");
+        // Exibir o formulário de login
         loginSection.style.display = 'block';
         registerSection.style.display = 'none';
         resetPasswordSection.style.display = 'none';
     }
 });
+
 function login() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
