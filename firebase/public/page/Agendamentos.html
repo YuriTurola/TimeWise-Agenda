@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,24 +25,38 @@
         }
     </script>
 </head>
+
 <body class="bg-dark-bg text-gray-300">
-    <nav class="bg-dark-surface p-4 shadow-md">
+    <nav class="bg-container-custom p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-orange-custom text-2xl font-bold flex items-center">
-                <i class="fas fa-clock mr-2"></i>TimeWise
+            <h1 id="estabelecimentoTitulo" class="text-orange-custom text-2xl font-bold flex items-center">
+                <img id="estabelecimentoLogo" src="" alt="Logo" class="mr-2 h-8 w-8 object-contain hidden">
+                <span>TimeWise</span>
             </h1>
-            <div id="userProfile" class="text-gray-300 hidden">
-                <div class="relative">
-                    <button id="userDropdown" class="flex items-center space-x-2 focus:outline-none">
-                        <span id="userName" class="text-white"></span>
-                        <i class="fas fa-chevron-down text-white"></i>
+            <div id="userProfile" class="text-gray-300 hidden relative">
+                <button id="menuButton"
+                    class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition duration-300 hover:shadow-lg flex items-center">
+                    <span id="userName" class="mr-2"></span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-xl z-20 hidden">
+                    <a href="../index.html"
+                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-orange-custom hover:text-white">
+                        <i class="fas fa-home mr-2"></i>Início
+                    </a>
+                    <a href="Agendamentos.html"
+                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-orange-custom hover:text-white">
+                        <i class="fas fa-calendar-check mr-2"></i>Agendamentos
+                    </a>
+                    <a href="Perfil.html"
+                        class="block px-4 py-2 text-sm text-gray-300 hover:bg-orange-custom hover:text-white">
+                        <i class="fas fa-user mr-2"></i>Perfil
+                    </a>
+
+                    <button id="logoutButton"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-orange-custom hover:text-white">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Sair
                     </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-dark-surface rounded-md shadow-lg hidden">
-                        <a href="Agendamentos.html" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Agendamentos</a>
-                        <a href="Perfil.html" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Perfil</a>
-                        <a href="estabelecimento.html" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Agendar</a>     
-                        <a href="../index.html" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Início</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -56,7 +71,8 @@
 
     <!-- Modal de Pagamento -->
     <div id="paymentModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-dark-surface rounded-lg overflow-hidden shadow-2xl w-full max-w-sm md:max-w-md lg:max-w-lg mx-auto">
+        <div
+            class="bg-dark-surface rounded-lg overflow-hidden shadow-2xl w-full max-w-sm md:max-w-md lg:max-w-lg mx-auto">
             <div class="bg-yellow-500 py-3 px-4 md:py-4 md:px-6">
                 <h2 id="modalTitle" class="text-xl md:text-2xl font-bold text-dark-surface flex items-center">
                     <i class="fas fa-credit-card mr-2"></i>
@@ -67,15 +83,18 @@
                 <div id="paymentInfo" class="space-y-3 md:space-y-4 mb-4 md:mb-6"></div>
                 <div id="paymentMethods" class="hidden space-y-3 md:space-y-4 mb-4 md:mb-6">
                     <h3 class="text-lg font-bold text-orange-custom">Escolha a forma de pagamento:</h3>
-                    <button class="payment-method-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-between w-full">
+                    <button
+                        class="payment-method-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-between w-full">
                         <span><i class="fas fa-credit-card mr-2"></i>Cartão de Crédito</span>
                         <i class="fas fa-chevron-right"></i>
                     </button>
-                    <button class="payment-method-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-between w-full">
+                    <button
+                        class="payment-method-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-between w-full">
                         <span><i class="fas fa-money-bill-wave mr-2"></i>Dinheiro</span>
                         <i class="fas fa-chevron-right"></i>
                     </button>
-                    <button class="payment-method-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-between w-full">
+                    <button
+                        class="payment-method-btn bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-between w-full">
                         <span><i class="fas fa-qrcode mr-2"></i>PIX</span>
                         <i class="fas fa-chevron-right"></i>
                     </button>
@@ -85,9 +104,11 @@
                     <div class="bg-white p-4 rounded-lg flex justify-center">
                         <img id="pixQRCode" src="" alt="QR Code PIX" class="w-48 h-48">
                     </div>
-                    <p class="text-sm text-gray-300">Escaneie o QR Code acima com o app do seu banco para realizar o pagamento.</p>
+                    <p class="text-sm text-gray-300">Escaneie o QR Code acima com o app do seu banco para realizar o
+                        pagamento.</p>
                     <p class="text-sm text-gray-300">Chave PIX: <span id="pixKey" class="font-bold"></span></p>
-                    <button id="pixConfirmButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
+                    <button id="pixConfirmButton"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
                         <i class="fas fa-check mr-2"></i>Confirmar Pagamento
                     </button>
                 </div>
@@ -95,29 +116,39 @@
                     <h3 class="text-lg font-bold text-orange-custom">Pagamento com Cartão</h3>
                     <div class="card-type-required">
                         <div class="flex space-x-2">
-                            <button id="creditCardBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex-1">Crédito</button>
-                            <button id="debitCardBtn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex-1">Débito</button>
+                            <button id="creditCardBtn"
+                                class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex-1">Crédito</button>
+                            <button id="debitCardBtn"
+                                class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex-1">Débito</button>
                         </div>
                     </div>
-                    <input type="text" id="cardNumber" placeholder="Número do Cartão" class="w-full bg-gray-700 text-white rounded px-3 py-2">
+                    <input type="text" id="cardNumber" placeholder="Número do Cartão"
+                        class="w-full bg-gray-700 text-white rounded px-3 py-2">
                     <div class="flex space-x-2">
-                        <input type="text" id="cardExpiry" placeholder="MM/AA" class="w-1/2 bg-gray-700 text-white rounded px-3 py-2">
-                        <input type="text" id="cardCVC" placeholder="CVC" class="w-1/2 bg-gray-700 text-white rounded px-3 py-2">
+                        <input type="text" id="cardExpiry" placeholder="MM/AA"
+                            class="w-1/2 bg-gray-700 text-white rounded px-3 py-2">
+                        <input type="text" id="cardCVC" placeholder="CVC"
+                            class="w-1/2 bg-gray-700 text-white rounded px-3 py-2">
                     </div>
-                    <input type="text" id="cardName" placeholder="Nome no Cartão" class="w-full bg-gray-700 text-white rounded px-3 py-2">
-                    <button id="cardConfirmButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
+                    <input type="text" id="cardName" placeholder="Nome no Cartão"
+                        class="w-full bg-gray-700 text-white rounded px-3 py-2">
+                    <button id="cardConfirmButton"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
                         <i class="fas fa-check mr-2"></i>Confirmar Pagamento
                     </button>
                 </div>
                 <div class="flex flex-col space-y-2 mt-6">
-                    <button id="confirmPayment" class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center">
+                    <button id="confirmPayment"
+                        class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center">
                         <i class="fas fa-check mr-2"></i>Confirmar
                     </button>
                     <div class="flex space-x-2">
-                        <button id="cancelPayment" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center flex-1">
+                        <button id="cancelPayment"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center flex-1">
                             <i class="fas fa-times mr-2"></i>Cancelar
                         </button>
-                        <button id="backButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center flex-1 hidden">
+                        <button id="backButton"
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center flex-1 hidden">
                             <i class="fas fa-arrow-left mr-2"></i>Voltar
                         </button>
                     </div>
@@ -128,7 +159,8 @@
 
     <!-- Modal de Avaliação -->
     <div id="ratingModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-dark-surface rounded-lg overflow-hidden shadow-2xl w-full max-w-sm md:max-w-md lg:max-w-lg mx-auto">
+        <div
+            class="bg-dark-surface rounded-lg overflow-hidden shadow-2xl w-full max-w-sm md:max-w-md lg:max-w-lg mx-auto">
             <div class="bg-yellow-500 py-3 px-4 md:py-4 md:px-6">
                 <h2 class="text-xl md:text-2xl font-bold text-dark-surface flex items-center">
                     <i class="fas fa-star mr-2"></i>
@@ -137,7 +169,8 @@
             </div>
             <div class="p-4 md:p-6">
                 <div class="mb-4">
-                    <h3 class="text-lg font-bold text-orange-custom mb-2">Avalie o Funcionário: <span id="workerName" class="text-white"></span></h3>
+                    <h3 class="text-lg font-bold text-orange-custom mb-2">Avalie o Funcionário: <span id="workerName"
+                            class="text-white"></span></h3>
                     <div id="workerRating" class="flex justify-center space-x-2">
                         <i class="fas fa-star text-2xl text-gray-400 cursor-pointer"></i>
                         <i class="fas fa-star text-2xl text-gray-400 cursor-pointer"></i>
@@ -147,7 +180,8 @@
                     </div>
                 </div>
                 <div class="mb-4">
-                    <h3 class="text-lg font-bold text-orange-custom mb-2">Avalie o Estabelecimento: <span id="establishmentName" class="text-white"></span></h3>
+                    <h3 class="text-lg font-bold text-orange-custom mb-2">Avalie o Estabelecimento: <span
+                            id="establishmentName" class="text-white"></span></h3>
                     <div id="establishmentRating" class="flex justify-center space-x-2">
                         <i class="fas fa-star text-2xl text-gray-400 cursor-pointer"></i>
                         <i class="fas fa-star text-2xl text-gray-400 cursor-pointer"></i>
@@ -156,7 +190,8 @@
                         <i class="fas fa-star text-2xl text-gray-400 cursor-pointer"></i>
                     </div>
                 </div>
-                <button id="submitRating" class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
+                <button id="submitRating"
+                    class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition duration-300 flex items-center justify-center w-full">
                     <i class="fas fa-paper-plane mr-2"></i>Enviar Avaliação
                 </button>
             </div>
@@ -192,4 +227,5 @@
         });
     </script>
 </body>
+
 </html>
