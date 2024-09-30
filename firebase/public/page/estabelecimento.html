@@ -3,8 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Projeto Tailwind com Firebase</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TimeWise - Estabelecimento</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="../css/pre-styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        @media (max-width: 640px) {
+            html, body {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            html, body {
+                font-size: 12px;
+            }
+        }
+
+        /* Estilos adicionais para responsividade */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 10px;
+            }
+        }
+
+        /* Ajustes para o modal de agendamento */
+        #agendamentoModal {
+            padding: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            #agendamentoModal > div {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Ajustes para os botões */
+        .btn-custom, .agendar-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .btn-custom, .agendar-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -458,6 +513,151 @@
             border-radius: 5px;
         }
     </style>
+    <style>
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            h1, h2, h3 {
+                font-size: 1.5rem;
+            }
+            .grid-cols-1 {
+                grid-template-columns: 1fr;
+            }
+            .slider-container {
+                height: 200px;
+            }
+            .slider img {
+                height: 200px;
+                object-fit: cover;
+            }
+            .popup {
+                width: 90% !important;
+                max-width: 90% !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+            }
+            h1, h2, h3 {
+                font-size: 1.2rem;
+            }
+            .slider-container {
+                height: 150px;
+            }
+            .slider img {
+                height: 150px;
+            }
+            #agendamentoModal > div {
+                padding: 1rem;
+            }
+            .btn-custom, .agendar-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        .services-carousel {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .carousel-content {
+            display: flex;
+            flex-wrap: nowrap;
+        }
+
+        .carousel-content > div {
+            flex: 0 0 auto;
+            width: 100%;
+            max-width: 300px;
+            margin-right: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .carousel-content > div {
+                width: calc(50% - 0.5rem);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .carousel-content > div {
+                width: calc(33.333% - 0.667rem);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .carousel-content > div {
+                width: calc(25% - 0.75rem);
+            }
+        }
+
+        .comentario-item {
+            width: 100%;
+            padding: 0 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .comentario-item {
+                width: 50%;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .comentario-item {
+                width: 33.333%;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .comentario-item {
+                width: 25%;
+            }
+        }
+    </style>
+    <style>
+        @media (max-width: 640px) {
+            #agendamentoModal > div {
+                padding: 1rem;
+            }
+            #agendamentoModal h2 {
+                font-size: 1.5rem;
+            }
+            #agendamentoModal h3 {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #agendamentoModal > div {
+                padding: 0.5rem;
+            }
+            #agendamentoModal h2 {
+                font-size: 1.2rem;
+            }
+            #agendamentoModal h3 {
+                font-size: 1rem;
+            }
+        }
+
+        #diasDisponiveis, #horariosDisponiveis, #workersDisponiveis {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #diasDisponiveis button, #horariosDisponiveis button, #workersDisponiveis button {
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            #diasDisponiveis button, #horariosDisponiveis button, #workersDisponiveis button {
+                width: auto;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-dark-bg text-gray-300">
@@ -507,33 +707,38 @@
     </div>
 
     <!-- Modal de Agendamento -->
-    <div id="agendamentoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
-        <div class="p-6 rounded-lg max-w-4xl w-full mx-auto shadow-lg fade-in" style="background-color: var(--cor-container);">
+    <div id="agendamentoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-container-custom p-6 rounded-lg w-full max-w-4xl mx-auto shadow-lg fade-in">
             <h2 class="text-2xl font-bold mb-4 text-orange-custom text-center">
                 <i class="fas fa-calendar-check mr-2"></i>Agendar Serviço
             </h2>
             <p id="servicoNome" class="mb-4 text-center"></p>
-            <div id="diasDisponiveis" class="mb-4">
-                <h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="far fa-calendar-alt mr-2"></i>Dias
-                    Disponíveis</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div id="diasDisponiveis" class="mb-4">
+                        <h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="far fa-calendar-alt mr-2"></i>Dias Disponíveis</h3>
+                    </div>
+                    <div id="horariosDisponiveis" class="mb-4">
+                        <h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="far fa-clock mr-2"></i>Horários Disponíveis</h3>
+                    </div>
+                </div>
+                <div>
+                    <div id="workersDisponiveis" class="mb-4">
+                        <h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="fas fa-user-tie mr-2"></i>Funcionários Disponíveis</h3>
+                    </div>
+                </div>
             </div>
-            <div id="horariosDisponiveis" class="mb-4">
-                <h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="far fa-clock mr-2"></i>Horários
-                    Disponíveis</h3>
+            <div class="flex flex-col sm:flex-row justify-between mt-4">
+                <button id="confirmButton" onclick="confirmarAgendamento()"
+                    class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto mb-2 sm:mb-0 transition duration-300 hover:shadow-lg"
+                    disabled>
+                    <i class="fas fa-check-circle mr-2"></i>Confirmar Agendamento
+                </button>
+                <button onclick="fecharModal()"
+                    class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full sm:w-auto transition duration-300 hover:shadow-lg">
+                    <i class="fas fa-times-circle mr-2"></i>Cancelar
+                </button>
             </div>
-            <div id="workersDisponiveis" class="mb-4">
-                <h3 class="text-xl font-bold mb-2 text-orange-custom"><i class="fas fa-user-tie mr-2"></i>Funcionários
-                    Disponíveis</h3>
-            </div>
-            <button id="confirmButton" onclick="confirmarAgendamento()"
-                class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded w-full mb-2 transition duration-300 hover:shadow-lg"
-                disabled>
-                <i class="fas fa-check-circle mr-2"></i>Confirmar Agendamento
-            </button>
-            <button onclick="fecharModal()"
-                class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full transition duration-300 hover:shadow-lg">
-                <i class="fas fa-times-circle mr-2"></i>Cancelar
-            </button>
         </div>
     </div>
 
