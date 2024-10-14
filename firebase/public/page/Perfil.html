@@ -109,108 +109,149 @@
             projectId: "time-wise-agendamentos",
             storageBucket: "time-wise-agendamentos.appspot.com",
             messagingSenderId: "833338728870",
-            appId: "1:833338728870:web:f4f87d0e3f9c7dc92f6f66"
+            appId: "1:833338728870:web:f4f87d0e3f9c7dc92f6f67",
+            measurementId: "G-63ZD6V69EV"
         };
+
+        // Inicializar o Firebase
         firebase.initializeApp(firebaseConfig);
+
+        // Referências ao Firestore e Storage
         const db = firebase.firestore();
         const storage = firebase.storage();
-        const auth = firebase.auth();
 
-        // Verificar autenticação do usuário
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = "../login.html";
-            } else {
-                loadUserData(user.uid);
-            }
-        });
+        // Elementos do DOM
+        const userPhoto = document.getElementById('userPhoto');
+        const photoUpload = document.getElementById('photoUpload');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const userPhone = document.getElementById('userPhone');
+        const userPassword = document.getElementById('userPassword');
+        const showPasswordButton = document.getElementById('showPasswordButton');
+        const updatePasswordButton = document.getElementById('updatePasswordButton');
+        const saveButton = document.getElementById('saveButton');
+        const phoneError = document.getElementById('phoneError');
 
-        // Carregar dados do usuário
-        function loadUserData(uid) {
-            db.collection('usersweb').doc(uid).get().then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    document.getElementById("userPhoto").src = userData.photoURL || "default_photo.png"; // Imagem padrão
-                    document.getElementById("userName").value = userData.name;
-                    document.getElementById("userEmail").value = user.email;
-                    document.getElementById("userPhone").value = userData.phone || "";
-                }
-            }).catch((error) => {
-                console.error('Erro ao carregar dados do usuário:', error);
-            });
-        }
-
-        // Formatação do telefone
-        document.getElementById("userPhone").addEventListener("input", (event) => {
-            let phone = event.target.value.replace(/\D/g, '');
-            if (phone.length > 10) {
-                phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-            } else if (phone.length > 6) {
-                phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-            } else if (phone.length > 2) {
-                phone = phone.replace(/(\d{2})(\d{1,4})/, '($1) $2');
-            }
-            event.target.value = phone;
-        });
-
-        // Upload de foto de perfil
-        document.getElementById("photoUpload").addEventListener("change", (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                uploadProfilePhoto(file);
-            }
-        });
-
-        // Função para fazer upload da foto de perfil
-        function uploadProfilePhoto(file) {
-            const user = firebase.auth().currentUser;
-            const storageRef = storage.ref().child(`profile_photos/${user.uid}`);
-            
-            storageRef.put(file).then(() => {
-                storageRef.getDownloadURL().then((url) => {
-                    db.collection('usersweb').doc(user.uid).update({
-                        photoURL: url
-                    }).then(() => {
-                        document.getElementById("userPhoto").src = url; // Atualiza a foto de perfil na página
-                    }).catch((error) => {
-                        console.error('Erro ao atualizar URL da foto:', error);
+        // Carregar informações do usuário
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                db.collection('usersweb').doc(user.uid).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            userName.value = userData.name;
+                            userEmail.value = user.email;
+                            userPhone.value = userData.phone || ''; // Carregar telefone
+                            if (userData.photoURL) {
+                                userPhoto.src = userData.photoURL;
+                            } else {
+                                userPhoto.src = 'https://via.placeholder.com/150';
+                            }
+                        } else {
+                            // Se o documento não existir, crie-o
+                            const defaultName = user.displayName || "Usuário";
+                            db.collection('usersweb').doc(user.uid).set({
+                                name: defaultName,
+                                email: user.email,
+                                phone: '', // Inicializar telefone vazio
+                                photoURL: user.photoURL || 'https://via.placeholder.com/150'
+                            });
+                            userName.value = defaultName;
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Erro ao buscar dados do usuário:", error);
                     });
-                });
-            }).catch((error) => {
-                console.error('Erro ao fazer upload da foto:', error);
-            });
-        }
-
-        // Salvar alterações
-        document.getElementById("saveButton").addEventListener("click", () => {
-            const userName = document.getElementById("userName").value;
-            const userPhone = document.getElementById("userPhone").value.replace(/\D/g, '');
-
-            // Verifica formato do telefone
-            if (userPhone.length < 10) {
-                document.getElementById("phoneError").classList.remove('hidden');
-                return;
             } else {
-                document.getElementById("phoneError").classList.add('hidden');
+                window.location.href = '../login/LoginTimeWise.html';
             }
+        });
 
-            const user = firebase.auth().currentUser;
-            db.collection('usersweb').doc(user.uid).update({
-                name: userName,
-                phone: userPhone
-            }).then(() => {
-                alert("Informações salvas com sucesso!");
-            }).catch((error) => {
-                console.error("Erro ao salvar informações:", error);
+        // Função para formatar o telefone conforme o usuário digita
+        userPhone.addEventListener('input', (event) => {
+            // Remove qualquer caractere que não seja número
+            let phone = event.target.value.replace(/\D/g, '');
+            
+            // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
+            if (phone.length > 10) {
+                            // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
+                if (phone.length > 10) {
+                    phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                } else if (phone.length > 6) {
+                    phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+                } else if (phone.length > 2) {
+                    phone = phone.replace(/(\d{2})(\d{2,5})/, '($1) $2');
+                } else if (phone.length > 0) {
+                    phone = phone.replace(/(\d{2})/, '($1)');
+                }
+                
+                event.target.value = phone;
+
+                // Validar o formato do telefone
+                const phoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+                if (!phoneRegex.test(phone)) {
+                    phoneError.classList.remove('hidden');
+                    setTimeout(() => {
+                        phoneError.classList.add('hidden');
+                    }, 2000); // Mensagem de erro desaparece após 2 segundos
+                } else {
+                    phoneError.classList.add('hidden'); // Esconde a mensagem de erro se o formato for válido
+                }
             });
-        });
 
-        // Mostrar/ocultar senha
-        document.getElementById("showPasswordButton").addEventListener("click", () => {
-            const passwordField = document.getElementById("userPassword");
-            const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-            passwordField.setAttribute("type", type);
-        });
-    </script>
+            // Função para pré-visualizar a imagem
+            photoUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        userPhoto.src = e.target.result; // Define a imagem de pré-visualização
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Função para exibir ou ocultar a senha
+            showPasswordButton.addEventListener('click', () => {
+                if (userPassword.type === 'password') {
+                    userPassword.type = 'text';
+                    showPasswordButton.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    userPassword.type = 'password';
+                    showPasswordButton.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+
+            // Função para atualizar a senha (pode incluir lógica para atualizar no Firebase)
+            updatePasswordButton.addEventListener('click', () => {
+                const newPassword = prompt('Digite a nova senha:');
+                if (newPassword) {
+                    firebase.auth().currentUser.updatePassword(newPassword)
+                        .then(() => {
+                            alert('Senha atualizada com sucesso!');
+                        })
+                        .catch((error) => {
+                            console.error("Erro ao atualizar a senha:", error);
+                        });
+                }
+            });
+
+            // Função para salvar as informações do usuário
+            saveButton.addEventListener('click', () => {
+                const userData = {
+                    name: userName.value,
+                    phone: userPhone.value,
+                    photoURL: userPhoto.src
+                };
+                
+                db.collection('usersweb').doc(firebase.auth().currentUser.uid).set(userData, { merge: true })
+                    .then(() => {
+                        alert('Informações salvas com sucesso!');
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao salvar informações:", error);
+                    });
+            });
+        </script>
 </body>
 </html>
