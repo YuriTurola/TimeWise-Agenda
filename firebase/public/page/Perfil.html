@@ -63,20 +63,29 @@
                 </label>
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userEmail" type="email" readonly>
             </div>
+
+            <!-- Adicionando Campo de Telefone -->
+            <div class="mb-4">
+                <label class="block text-orange-custom text-sm font-bold mb-2" for="userPhone">
+                    Telefone
+                </label>
+                <input class="w-full p-2 rounded bg-gray-800 text-white" id="userPhone" type="tel" placeholder="(11) 91234-5678" maxlength="15">
+                <p id="phoneError" class="text-red-500 text-sm hidden">Formato de telefone inválido</p>
+            </div>
+
             <div>
                 <label class="block text-gray-400 text-sm font-bold mb-2" for="userPassword">
                     <i class="fas fa-lock mr-2"></i>Senha
                 </label>
                 <div class="flex">
-                    <input class="w-full p-3 rounded-l bg-gray-800 text-white" id="userPassword" type="password" value="********" readonly>
-                    <button id="showPasswordButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 transition duration-300 flex items-center" disabled>
+                    <input class="w-full p-3 rounded-l bg-gray-800 text-white" id="userPassword" type="password" value="********">
+                    <button id="showPasswordButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 transition duration-300 flex items-center">
                         <i class="fas fa-eye"></i>
                     </button>
                     <button id="updatePasswordButton" class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-r focus:outline-none focus:shadow-outline transition duration-300 flex items-center">
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
-                <input class="w-full p-2 mt-2 rounded bg-gray-800 text-white" id="currentPassword" type="password" placeholder="Digite sua senha atual">
             </div>
             <div class="mt-6 flex justify-center">
                 <button id="saveButton" class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full focus:outline-none focus:shadow-outline transition duration-300 flex items-center justify-center">
@@ -116,11 +125,12 @@
         const photoUpload = document.getElementById('photoUpload');
         const userName = document.getElementById('userName');
         const userEmail = document.getElementById('userEmail');
+        const userPhone = document.getElementById('userPhone');
         const userPassword = document.getElementById('userPassword');
         const showPasswordButton = document.getElementById('showPasswordButton');
         const updatePasswordButton = document.getElementById('updatePasswordButton');
         const saveButton = document.getElementById('saveButton');
-        const currentPassword = document.getElementById('currentPassword');
+        const phoneError = document.getElementById('phoneError');
 
         // Carregar informações do usuário
         firebase.auth().onAuthStateChanged((user) => {
@@ -130,8 +140,8 @@
                         if (doc.exists) {
                             const userData = doc.data();
                             userName.value = userData.name;
-                            document.getElementById('userName').textContent = `Olá, ${userData.name}`;
                             userEmail.value = user.email;
+                            userPhone.value = userData.phone || ''; // Carregar telefone
                             if (userData.photoURL) {
                                 userPhoto.src = userData.photoURL;
                             } else {
@@ -143,10 +153,10 @@
                             db.collection('usersweb').doc(user.uid).set({
                                 name: defaultName,
                                 email: user.email,
+                                phone: '', // Inicializar telefone vazio
                                 photoURL: user.photoURL || 'https://via.placeholder.com/150'
                             });
                             userName.value = defaultName;
-                            document.getElementById('userName').textContent = `Olá, ${defaultName}`;
                         }
                     })
                     .catch((error) => {
@@ -157,85 +167,99 @@
             }
         });
 
-        // Upload de nova foto de perfil
-        photoUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
+        // Função para formatar o telefone conforme o usuário digita
+    // Função para formatar o telefone conforme o usuário digita
+userPhone.addEventListener('input', (event) => {
+    // Remove qualquer caractere que não seja número
+    let phone = event.target.value.replace(/\D/g, '');
+    
+    // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
+    if (phone.length > 10) {
+        phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (phone.length > 6) {
+        phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else if (phone.length > 2) {
+        phone = phone.replace(/(\d{2})(\d{2})/, '($1) $2');
+    } else if (phone.length === 2) {
+        phone = phone.replace(/(\d{2})/, '($1)');
+    }
+
+    // Atualiza o valor do input
+    event.target.value = phone;
+});
+
+        // Função para validar o telefone
+        function validatePhone(phone) {
+            const phonePattern = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+            if (phonePattern.test(phone)) {
+                phoneError.classList.add('hidden');
+            } else {
+                phoneError.classList.remove('hidden');
+            }
+        }
+
+        // Exibir/ocultar senha
+        showPasswordButton.addEventListener('click', () => {
+            const type = userPassword.type === 'password' ? 'text' : 'password';
+            userPassword.type = type;
+            showPasswordButton.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        // Atualizar a senha do usuário
+        updatePasswordButton.addEventListener('click', () => {
+            const newPassword = userPassword.value;
             const user = firebase.auth().currentUser;
-            const storageRef = storage.ref(`profile_photos/${user.uid}`);
-            
-            storageRef.put(file).then(() => {
-                return storageRef.getDownloadURL();
-            }).then((url) => {
-                userPhoto.src = url;
-                db.collection('usersweb').doc(user.uid).update({
-                    photoURL: url
-                });
-                user.updateProfile({
-                    photoURL: url
-                });
+            user.updatePassword(newPassword).then(() => {
+                alert('Senha atualizada com sucesso!');
             }).catch((error) => {
-                console.log("Erro ao fazer upload da foto:", error);
+                console.error('Erro ao atualizar a senha:', error);
+                alert('Erro ao atualizar a senha. Tente novamente.');
             });
         });
 
-        // Mostrar senha
-        showPasswordButton.addEventListener('click', () => {
+        // Salvar dados do usuário
+        saveButton.addEventListener('click', () => {
+            const userData = {
+                name: userName.value,
+                phone: userPhone.value
+            };
             const user = firebase.auth().currentUser;
-            const currentPasswordValue = currentPassword.value;
-
-            // Autenticar a senha atual
-            const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPasswordValue);
-            user.reauthenticateWith
-            // Autenticar a senha atual
-            const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPasswordValue);
-            user.reauthenticateWithCredential(credential)
+            db.collection('usersweb').doc(user.uid).update(userData)
                 .then(() => {
-                    // Se a senha atual estiver correta, exibir a senha
-                    userPassword.type = userPassword.type === 'password' ? 'text' : 'password';
-                    showPasswordButton.innerHTML = userPassword.type === 'text' 
-                        ? '<i class="fas fa-eye-slash"></i>' 
-                        : '<i class="fas fa-eye"></i>';
+                    alert('Dados salvos com sucesso!');
+                    // Atualizar foto se uma nova for selecionada
+                    if (photoUpload.files[0]) {
+                        uploadProfilePhoto(photoUpload.files[0]);
+                    }
                 })
                 .catch((error) => {
-                    alert("Senha atual incorreta. Tente novamente.");
-                    console.error("Erro na reautenticação:", error);
+                    console.error('Erro ao salvar dados:', error);
+                    alert('Erro ao salvar dados. Tente novamente.');
                 });
         });
 
-        // Atualizar senha
-        updatePasswordButton.addEventListener('click', () => {
+        // Função para fazer o upload da foto de perfil
+        function uploadProfilePhoto(file) {
             const user = firebase.auth().currentUser;
-            const newPassword = prompt("Digite a nova senha:");
-            
-            if (newPassword) {
-                user.updatePassword(newPassword)
-                    .then(() => {
-                        alert("Senha atualizada com sucesso!");
-                        userPassword.value = "********"; // Reiniciar o campo de senha
-                    })
-                    .catch((error) => {
-                        alert("Erro ao atualizar a senha: " + error.message);
-                        console.error("Erro ao atualizar a senha:", error);
-                    });
-            } else {
-                alert("A nova senha não pode ser vazia.");
-            }
-        });
-
-        // Salvar alterações
-        saveButton.addEventListener('click', () => {
-            const user = firebase.auth().currentUser;
-
-            // Atualiza o nome do usuário
-            db.collection('usersweb').doc(user.uid).update({
-                name: userName.value
-            }).then(() => {
-                alert("Nome atualizado com sucesso!");
+            const storageRef = storage.ref(`profile_photos/${user.uid}/${file.name}`);
+            storageRef.put(file).then(() => {
+                return storageRef.getDownloadURL();
+            }).then((downloadURL) => {
+                // Atualizar URL da foto do usuário no Firestore
+                db.collection('usersweb').doc(user.uid).update({
+                    photoURL: downloadURL
+                }).then(() => {
+                    userPhoto.src = downloadURL; // Atualiza a imagem no DOM
+                    alert('Foto de perfil atualizada com sucesso!');
+                }).catch((error) => {
+                    console.error('Erro ao atualizar a foto:', error);
+                    alert('Erro ao atualizar a foto. Tente novamente.');
+                });
             }).catch((error) => {
-                console.error("Erro ao atualizar o nome:", error);
-                alert("Erro ao atualizar o nome.");
+                console.error('Erro ao fazer upload da foto:', error);
+                alert('Erro ao fazer upload da foto. Tente novamente.');
             });
-        });
+        }
     </script>
 </body>
 </html>
