@@ -45,30 +45,24 @@
         <h1 class="text-3xl font-bold mb-8 text-center text-orange-custom">Perfil do Usuário</h1>
         <div class="bg-dark-surface rounded-lg shadow-lg p-8 hover-grow fade-in">
             <div class="mb-6 text-center">
-                <img id="userPhoto" class="w-32 h-32 rounded-full mx-auto mb-4 border-2 border-orange-custom" src="" alt="Foto de perfil">
+                <img id="userPhoto" class="w-32 h-32 rounded-full mx-auto mb-4 border-2 border-orange-custom" src="https://via.placeholder.com/150" alt="Foto de perfil">
                 <input type="file" id="photoUpload" class="hidden" accept="image/*">
                 <label for="photoUpload" class="bg-orange-custom hover:bg-orange-600 text-white font-bold py-2 px-4 rounded cursor-pointer transition duration-300">
                     Alterar foto de perfil
                 </label>
             </div>
             <div class="mb-4">
-                <label class="block text-orange-custom text-sm font-bold mb-2" for="userName">
-                    Nome
-                </label>
-                <input class="w-full p-2 rounded bg-gray-800 text-white" id="userName" type="text">
+                <label class="block text-orange-custom text-sm font-bold mb-2" for="userName">Nome</label>
+                <input class="w-full p-2 rounded bg-gray-800 text-white" id="userName" type="text" readonly>
             </div>
             <div class="mb-4">
-                <label class="block text-orange-custom text-sm font-bold mb-2" for="userEmail">
-                    Email
-                </label>
+                <label class="block text-orange-custom text-sm font-bold mb-2" for="userEmail">Email</label>
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userEmail" type="email" readonly>
             </div>
 
-            <!-- Adicionando Campo de Telefone -->
+            <!-- Campo de Telefone -->
             <div class="mb-4">
-                <label class="block text-orange-custom text-sm font-bold mb-2" for="userPhone">
-                    Telefone
-                </label>
+                <label class="block text-orange-custom text-sm font-bold mb-2" for="userPhone">Telefone</label>
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userPhone" type="tel" placeholder="(11) 91234-5678" maxlength="15">
                 <p id="phoneError" class="text-red-500 text-sm hidden">Formato de telefone inválido</p>
             </div>
@@ -78,7 +72,7 @@
                     <i class="fas fa-lock mr-2"></i>Senha
                 </label>
                 <div class="flex">
-                    <input class="w-full p-3 rounded-l bg-gray-800 text-white" id="userPassword" type="password" value="********">
+                    <input class="w-full p-3 rounded-l bg-gray-800 text-white" id="userPassword" type="password" value="********" readonly>
                     <button id="showPasswordButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 transition duration-300 flex items-center">
                         <i class="fas fa-eye"></i>
                     </button>
@@ -141,117 +135,79 @@
                             const userData = doc.data();
                             userName.value = userData.name;
                             userEmail.value = user.email;
-                            userPhone.value = userData.phone || ''; // Carregar telefone
-                            if (userData.photoURL) {
-                                userPhoto.src = userData.photoURL;
-                            } else {
-                                userPhoto.src = 'https://via.placeholder.com/150';
-                            }
+                            userPhone.value = userData.phone || '';
+                            userPhoto.src = userData.photo || userPhoto.src;
                         } else {
-                            // Se o documento não existir, crie-o
-                            const defaultName = user.displayName || "Usuário";
-                            db.collection('usersweb').doc(user.uid).set({
-                                name: defaultName,
-                                email: user.email,
-                                phone: '', // Inicializar telefone vazio
-                                photoURL: user.photoURL || 'https://via.placeholder.com/150'
-                            });
-                            userName.value = defaultName;
+                            console.log("Nenhum documento encontrado!");
                         }
                     })
                     .catch((error) => {
-                        console.log("Erro ao buscar dados do usuário:", error);
+                        console.error("Erro ao obter o documento:", error);
                     });
             } else {
-                window.location.href = '../login/LoginTimeWise.html';
+                console.log("Usuário não autenticado!");
             }
         });
 
-        // Função para formatar o telefone conforme o usuário digita
-        userPhone.addEventListener('input', (event) => {
-            // Remove qualquer caractere que não seja número
-            let phone = event.target.value.replace(/\D/g, '');
-            
-            // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
-            if (phone.length > 10) {
-                            // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
-                if (phone.length > 10) {
-                    phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-                } else if (phone.length > 6) {
-                    phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-                } else if (phone.length > 2) {
-                    phone = phone.replace(/(\d{2})(\d{2,5})/, '($1) $2');
-                } else if (phone.length > 0) {
-                    phone = phone.replace(/(\d{2})/, '($1)');
-                }
-                
-                event.target.value = phone;
-
-                // Validar o formato do telefone
-                const phoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
-                if (!phoneRegex.test(phone)) {
-                    phoneError.classList.remove('hidden');
-                    setTimeout(() => {
-                        phoneError.classList.add('hidden');
-                    }, 2000); // Mensagem de erro desaparece após 2 segundos
-                } else {
-                    phoneError.classList.add('hidden'); // Esconde a mensagem de erro se o formato for válido
-                }
-            });
-
-            // Função para pré-visualizar a imagem
-            photoUpload.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        userPhoto.src = e.target.result; // Define a imagem de pré-visualização
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Função para exibir ou ocultar a senha
-            showPasswordButton.addEventListener('click', () => {
-                if (userPassword.type === 'password') {
-                    userPassword.type = 'text';
-                    showPasswordButton.innerHTML = '<i class="fas fa-eye-slash"></i>';
-                } else {
-                    userPassword.type = 'password';
-                    showPasswordButton.innerHTML = '<i class="fas fa-eye"></i>';
-                }
-            });
-
-            // Função para atualizar a senha (pode incluir lógica para atualizar no Firebase)
-            updatePasswordButton.addEventListener('click', () => {
-                const newPassword = prompt('Digite a nova senha:');
-                if (newPassword) {
-                    firebase.auth().currentUser.updatePassword(newPassword)
-                        .then(() => {
-                            alert('Senha atualizada com sucesso!');
-                        })
-                        .catch((error) => {
-                            console.error("Erro ao atualizar a senha:", error);
-                        });
-                }
-            });
-
-            // Função para salvar as informações do usuário
-            saveButton.addEventListener('click', () => {
-                const userData = {
-                    name: userName.value,
-                    phone: userPhone.value,
-                    photoURL: userPhoto.src
+        // Pré-visualização de imagem
+        photoUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    userPhoto.src = e.target.result;
                 };
-                
-                db.collection('usersweb').doc(firebase.auth().currentUser.uid).set(userData, { merge: true })
-                    .then(() => {
-                        alert('Informações salvas com sucesso!');
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao salvar informações:", error);
-                    });
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Validação do telefone
+        userPhone.addEventListener('input', (event) => {
+            const phone = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+            const formattedPhone = phone.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+
+            if (formattedPhone.length > 15) {
+                phoneError.classList.remove('hidden');
+            } else {
+                phoneError.classList.add('hidden');
+            }
+
+            userPhone.value = formattedPhone;
+        });
+
+        // Exibir/ocultar senha
+        let passwordVisible = false;
+        showPasswordButton.addEventListener('click', () => {
+            passwordVisible = !passwordVisible;
+            userPassword.type = passwordVisible ? 'text' : 'password';
+            showPasswordButton.innerHTML = passwordVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        });
+
+        // Salvar informações
+        saveButton.addEventListener('click', () => {
+            const phone = userPhone.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+            // Validação do telefone
+            if (phone.length < 10 || phone.length > 11) {
+                phoneError.classList.remove('hidden');
+                setTimeout(() => {
+                    phoneError.classList.add('hidden');
+                }, 2000);
+                return;
+            }
+
+            const user = firebase.auth().currentUser;
+            db.collection('usersweb').doc(user.uid).update({
+                phone: phone
+            })
+            .then(() => {
+                console.log("Telefone salvo com sucesso!");
+                alert("Telefone salvo com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao salvar telefone:", error);
             });
-        </script>
+        });
+    </script>
 </body>
 </html>
