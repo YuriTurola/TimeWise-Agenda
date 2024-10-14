@@ -61,6 +61,7 @@ function exibirModalComentarios(appointment, index) {
 
     // Verificar se já existe um comentário
     if (appointment.comentario) {
+        console.log("User Photo URL in Comment:", appointment.comentario.userPhotoURL);
         comentarioExistente.innerHTML = `
             <div class="bg-gray-800 p-4 rounded mb-4">
                 <div class="flex items-center mb-2">
@@ -98,6 +99,8 @@ function adicionarComentario(index, texto) {
         return;
     }
 
+    console.log("User Photo URL:", user.photoURL); // Adicionando log aqui
+
     db.collection("appointments").doc(user.uid).get()
         .then((doc) => {
             if (doc.exists) {
@@ -113,6 +116,8 @@ function adicionarComentario(index, texto) {
                         workerName: appointment.workerName || 'Funcionário não especificado',
                         serviceName: appointment.serviceName || 'Serviço não especificado'
                     };
+
+                    console.log("Novo Comentário:", novoComentario); // Adicionando log aqui
 
                     if (!appointment.comentario) {
                         appointments[index].comentario = novoComentario;
