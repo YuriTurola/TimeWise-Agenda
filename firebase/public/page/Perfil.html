@@ -60,6 +60,7 @@
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userEmail" type="email" readonly>
             </div>
 
+            <!-- Campo de Telefone -->
             <div class="mb-4">
                 <label class="block text-orange-custom text-sm font-bold mb-2" for="userPhone">Telefone</label>
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userPhone" type="tel" placeholder="(11) 91234-5678" maxlength="15">
@@ -134,14 +135,7 @@
                             const userData = doc.data();
                             userName.value = userData.name;
                             userEmail.value = user.email;
-
-                            // Formatar e carregar o telefone
-                            if (userData.phone) {
-                                userPhone.value = formatPhone(userData.phone);
-                            } else {
-                                userPhone.value = '';
-                            }
-
+                            userPhone.value = userData.phone || '';
                             userPhoto.src = userData.photo || userPhoto.src;
                         } else {
                             console.log("Nenhum documento encontrado!");
@@ -155,15 +149,6 @@
             }
         });
 
-        // Função para formatar o telefone
-        function formatPhone(phone) {
-            // Verifique se o telefone tem o comprimento certo
-            if (phone.length === 11) {
-                return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-            }
-            return phone; // Retorna o telefone original se não tiver o comprimento esperado
-        }
-
         // Pré-visualização de imagem
         photoUpload.addEventListener('change', (event) => {
             const file = event.target.files[0];
@@ -176,50 +161,52 @@
             }
         });
 
-        // Salvar a imagem e informações do usuário
-        saveButton.addEventListener('click', () => {
-            const userId = firebase.auth().currentUser.uid;
-            const phone = userPhone.value;
+        // Validação do telefone
+        userPhone.addEventListener('input', (event) => {
+            const phone = event.target.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+            const formattedPhone = phone.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
 
-            if (validatePhone(phone)) {
-                const updatedData = {
-                    phone: phone.replace(/\D/g, ''), // Remover caracteres não numéricos
-                };
-
-                // Salvar no Firestore
-                db.collection('usersweb').doc(userId).update(updatedData)
-                    .then(() => {
-                        alert('Informações salvas com sucesso!');
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao atualizar informações:", error);
-                    });
+            if (formattedPhone.length > 15) {
+                phoneError.classList.remove('hidden');
             } else {
+                phoneError.classList.add('hidden');
+            }
+
+            userPhone.value = formattedPhone;
+        });
+
+        // Exibir/ocultar senha
+        let passwordVisible = false;
+        showPasswordButton.addEventListener('click', () => {
+            passwordVisible = !passwordVisible;
+            userPassword.type = passwordVisible ? 'text' : 'password';
+            showPasswordButton.innerHTML = passwordVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        });
+
+        // Salvar informações
+        saveButton.addEventListener('click', () => {
+            const phone = userPhone.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+            // Validação do telefone
+            if (phone.length < 10 || phone.length > 11) {
                 phoneError.classList.remove('hidden');
                 setTimeout(() => {
                     phoneError.classList.add('hidden');
                 }, 2000);
+                return;
             }
-        });
 
-        // Função para validar o telefone
-        function validatePhone(phone) {
-            const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
-            return phoneRegex.test(phone);
-        }
-
-        // Exibir/ocultar a senha
-        showPasswordButton.addEventListener('click', () => {
-            const inputType = userPassword.type === 'password' ? 'text' : 'password';
-            userPassword.type = inputType;
-            showPasswordButton.querySelector('i').classList.toggle('fa-eye');
-            showPasswordButton.querySelector('i').classList.toggle('fa-eye-slash');
-        });
-
-        // Ação ao clicar no botão de atualizar senha
-        updatePasswordButton.addEventListener('click', () => {
-            // Aqui você pode implementar a lógica de atualização de senha
-            alert('Lógica de atualização de senha não implementada ainda.');
+            const user = firebase.auth().currentUser;
+            db.collection('usersweb').doc(user.uid).update({
+                phone: phone
+            })
+            .then(() => {
+                console.log("Telefone salvo com sucesso!");
+                alert("Telefone salvo com sucesso!");
+            })
+            .catch((error) => {
+                console.error("Erro ao salvar telefone:", error);
+            });
         });
     </script>
 </body>
