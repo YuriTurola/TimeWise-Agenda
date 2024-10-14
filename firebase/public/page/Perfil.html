@@ -168,60 +168,30 @@
         });
 
         // Função para formatar o telefone conforme o usuário digita
-    // Função para formatar o telefone conforme o usuário digita
-userPhone.addEventListener('input', (event) => {
-    // Remove qualquer caractere que não seja número
-    let phone = event.target.value.replace(/\D/g, '');
-    
-    // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
-    if (phone.length > 10) {
-        phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    } else if (phone.length > 6) {
-        phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    } else if (phone.length > 2) {
-        phone = phone.replace(/(\d{2})(\d{2})/, '($1) $2');
-    } else if (phone.length === 2) {
-        phone = phone.replace(/(\d{2})/, '($1)');
-    }
-
-    // Atualiza o valor do input
-    event.target.value = phone;
-});
-
-        // Função para validar o telefone
-        function validatePhone(phone) {
-            const phonePattern = /^\(\d{2}\) \d{4,5}-\d{4}$/;
-            if (phonePattern.test(phone)) {
-                phoneError.classList.add('hidden');
-            } else {
-                phoneError.classList.remove('hidden');
-            }
-        }
-
-        // Exibir/ocultar senha
-        showPasswordButton.addEventListener('click', () => {
-            const type = userPassword.type === 'password' ? 'text' : 'password';
-            userPassword.type = type;
-            showPasswordButton.querySelector('i').classList.toggle('fa-eye-slash');
-        });
-
-        // Atualizar a senha do usuário
-        updatePasswordButton.addEventListener('click', () => {
-            const newPassword = userPassword.value;
-            const user = firebase.auth().currentUser;
-            user.updatePassword(newPassword).then(() => {
-                alert('Senha atualizada com sucesso!');
-            }).catch((error) => {
-                console.error('Erro ao atualizar a senha:', error);
-                alert('Erro ao atualizar a senha. Tente novamente.');
-            });
-        });
-
-        // Salvar dados do usuário
+        userPhone.addEventListener('input', (event) => {
+            // Remove qualquer caractere que não seja número
+            let phone = event.target.value.replace(/\D/g, '');
+            
+            // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
+            if (phone.length > 10) {
+                phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (phone.length > 6) {
+                phone = phone.replace(/(\d{2})(\d
+                    // Salvar dados do usuário
         saveButton.addEventListener('click', () => {
+            const phoneValue = userPhone.value;
+
+            // Validar o telefone antes de salvar
+            if (!validatePhone(phoneValue)) {
+                phoneError.classList.remove('hidden');
+                return; // Não salva se o telefone estiver no formato inválido
+            } else {
+                phoneError.classList.add('hidden');
+            }
+
             const userData = {
                 name: userName.value,
-                phone: userPhone.value
+                phone: phoneValue
             };
             const user = firebase.auth().currentUser;
             db.collection('usersweb').doc(user.uid).update(userData)
@@ -238,27 +208,10 @@ userPhone.addEventListener('input', (event) => {
                 });
         });
 
-        // Função para fazer o upload da foto de perfil
-        function uploadProfilePhoto(file) {
-            const user = firebase.auth().currentUser;
-            const storageRef = storage.ref(`profile_photos/${user.uid}/${file.name}`);
-            storageRef.put(file).then(() => {
-                return storageRef.getDownloadURL();
-            }).then((downloadURL) => {
-                // Atualizar URL da foto do usuário no Firestore
-                db.collection('usersweb').doc(user.uid).update({
-                    photoURL: downloadURL
-                }).then(() => {
-                    userPhoto.src = downloadURL; // Atualiza a imagem no DOM
-                    alert('Foto de perfil atualizada com sucesso!');
-                }).catch((error) => {
-                    console.error('Erro ao atualizar a foto:', error);
-                    alert('Erro ao atualizar a foto. Tente novamente.');
-                });
-            }).catch((error) => {
-                console.error('Erro ao fazer upload da foto:', error);
-                alert('Erro ao fazer upload da foto. Tente novamente.');
-            });
+        // Função para validar o telefone
+        function validatePhone(phone) {
+            const phonePattern = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+            return phonePattern.test(phone);
         }
     </script>
 </body>
