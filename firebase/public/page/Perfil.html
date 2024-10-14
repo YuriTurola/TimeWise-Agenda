@@ -63,12 +63,22 @@
                 </label>
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userEmail" type="email" readonly>
             </div>
+
+            <!-- Adicionando Campo de Telefone -->
+            <div class="mb-4">
+                <label class="block text-orange-custom text-sm font-bold mb-2" for="userPhone">
+                    Telefone
+                </label>
+                <input class="w-full p-2 rounded bg-gray-800 text-white" id="userPhone" type="tel" placeholder="(11) 91234-5678">
+                <p id="phoneError" class="text-red-500 text-sm hidden">Formato de telefone inválido</p>
+            </div>
+
             <div>
                 <label class="block text-gray-400 text-sm font-bold mb-2" for="userPassword">
                     <i class="fas fa-lock mr-2"></i>Senha
                 </label>
                 <div class="flex">
-                    <input class="w-full p-3 rounded-l bg-gray-800 text-white" id="userPassword" type="password" value="********" readonly>
+                    <input class="w-full p-3 rounded-l bg-gray-800 text-white" id="userPassword" type="password" value="********">
                     <button id="showPasswordButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 transition duration-300 flex items-center">
                         <i class="fas fa-eye"></i>
                     </button>
@@ -115,10 +125,12 @@
         const photoUpload = document.getElementById('photoUpload');
         const userName = document.getElementById('userName');
         const userEmail = document.getElementById('userEmail');
+        const userPhone = document.getElementById('userPhone');
         const userPassword = document.getElementById('userPassword');
         const showPasswordButton = document.getElementById('showPasswordButton');
         const updatePasswordButton = document.getElementById('updatePasswordButton');
         const saveButton = document.getElementById('saveButton');
+        const phoneError = document.getElementById('phoneError');
 
         // Carregar informações do usuário
         firebase.auth().onAuthStateChanged((user) => {
@@ -128,8 +140,8 @@
                         if (doc.exists) {
                             const userData = doc.data();
                             userName.value = userData.name;
-                            document.getElementById('userName').textContent = `Olá, ${userData.name}`;
                             userEmail.value = user.email;
+                            userPhone.value = userData.phone || ''; // Carregar telefone
                             if (userData.photoURL) {
                                 userPhoto.src = userData.photoURL;
                             } else {
@@ -141,10 +153,10 @@
                             db.collection('usersweb').doc(user.uid).set({
                                 name: defaultName,
                                 email: user.email,
+                                phone: '', // Inicializar telefone vazio
                                 photoURL: user.photoURL || 'https://via.placeholder.com/150'
                             });
                             userName.value = defaultName;
-                            document.getElementById('userName').textContent = `Olá, ${defaultName}`;
                         }
                     })
                     .catch((error) => {
@@ -153,27 +165,6 @@
             } else {
                 window.location.href = '../login/LoginTimeWise.html';
             }
-        });
-
-        // Upload de nova foto de perfil
-        photoUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            const user = firebase.auth().currentUser;
-            const storageRef = storage.ref(`profile_photos/${user.uid}`);
-            
-            storageRef.put(file).then(() => {
-                return storageRef.getDownloadURL();
-            }).then((url) => {
-                userPhoto.src = url;
-                db.collection('usersweb').doc(user.uid).update({
-                    photoURL: url
-                });
-                user.updateProfile({
-                    photoURL: url
-                });
-            }).catch((error) => {
-                console.log("Erro ao fazer upload da foto:", error);
-            });
         });
 
         // Mostrar senha
@@ -202,10 +193,30 @@
             }
         });
 
+        // Validar e formatar número de telefone no padrão brasileiro
+        userPhone.addEventListener('input', () => {
+            const phoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+            const phoneValue = userPhone.value.trim();
+
+            if (!phoneRegex.test(phoneValue)) {
+                phoneError.classList.remove('hidden');
+            } else {
+                phoneError.classList.add('hidden');
+            }
+        });
+
         // Salvar alterações
         saveButton.addEventListener('click', () => {
             const user = firebase.auth().currentUser;
             const newName = userName.value;
+            const newPhone = userPhone.value.trim();
+
+            // Validação do telefone antes de salvar
+            const phoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+            if (!phoneRegex.test(newPhone)) {
+                alert('Por favor, insira um número de telefone válido.');
+                return;
+            }
 
             if (newName && newName.trim() !== '') {
                 if (confirm(`Deseja salvar as alterações?`)) {
@@ -213,11 +224,11 @@
                         displayName: newName
                     }).then(() => {
                         return db.collection('usersweb').doc(user.uid).update({
-                            name: newName
+                            name: newName,
+                            phone: newPhone // Atualizar telefone no Firestore
                         });
                     }).then(() => {
                         alert('Alterações salvas com sucesso!');
-                        document.getElementById('userName').textContent = `Olá, ${newName}`;
                     }).catch((error) => {
                         console.error("Erro ao salvar alterações:", error);
                         alert('Erro ao salvar alterações. Por favor, tente novamente mais tarde.');
