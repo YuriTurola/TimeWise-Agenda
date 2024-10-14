@@ -150,16 +150,37 @@
         });
 
         // Pré-visualização de imagem
-        photoUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    userPhoto.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+   // Pré-visualização de imagem e upload
+photoUpload.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            userPhoto.src = e.target.result; // Atualiza a pré-visualização
+        };
+        reader.readAsDataURL(file);
+
+        // Upload da imagem para o Firebase Storage
+        const storageRef = storage.ref(`user_photos/${firebase.auth().currentUser.uid}`);
+        storageRef.put(file).then(() => {
+            // Recupera a URL da imagem e atualiza o Firestore
+            storageRef.getDownloadURL().then((url) => {
+                db.collection('usersweb').doc(firebase.auth().currentUser.uid).update({
+                    photo: url
+                })
+                .then(() => {
+                    console.log("Imagem atualizada com sucesso!");
+                })
+                .catch((error) => {
+                    console.error("Erro ao atualizar a URL da imagem:", error);
+                });
+            });
+        }).catch((error) => {
+            console.error("Erro ao fazer upload da imagem:", error);
         });
+    }
+});
+
 
         // Validação do telefone
         userPhone.addEventListener('input', (event) => {
