@@ -168,18 +168,25 @@
         });
 
         // Função para formatar o telefone conforme o usuário digita
-        userPhone.addEventListener('input', (event) => {
-            let phone = event.target.value.replace(/\D/g, ''); // Remove qualquer coisa que não seja número
-            if (phone.length > 10) {
-                phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-            } else if (phone.length > 5) {
-                phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-            } else if (phone.length > 2) {
-                phone = phone.replace(/(\d{2})(\d{2})/, '($1) $2');
-            }
-            event.target.value = phone;
-            validatePhone(phone);
-        });
+    // Função para formatar o telefone conforme o usuário digita
+userPhone.addEventListener('input', (event) => {
+    // Remove qualquer caractere que não seja número
+    let phone = event.target.value.replace(/\D/g, '');
+    
+    // Formata o número no formato (xx) xxxxx-xxxx ou (xx) xxxx-xxxx
+    if (phone.length > 10) {
+        phone = phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (phone.length > 6) {
+        phone = phone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else if (phone.length > 2) {
+        phone = phone.replace(/(\d{2})(\d{2})/, '($1) $2');
+    } else if (phone.length === 2) {
+        phone = phone.replace(/(\d{2})/, '($1)');
+    }
+
+    // Atualiza o valor do input
+    event.target.value = phone;
+});
 
         // Função para validar o telefone
         function validatePhone(phone) {
