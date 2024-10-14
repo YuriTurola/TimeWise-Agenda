@@ -60,7 +60,6 @@
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userEmail" type="email" readonly>
             </div>
 
-            <!-- Campo de Telefone -->
             <div class="mb-4">
                 <label class="block text-orange-custom text-sm font-bold mb-2" for="userPhone">Telefone</label>
                 <input class="w-full p-2 rounded bg-gray-800 text-white" id="userPhone" type="tel" placeholder="(11) 91234-5678" maxlength="15">
@@ -138,8 +137,7 @@
 
                             // Formatar e carregar o telefone
                             if (userData.phone) {
-                                const formattedPhone = formatPhone(userData.phone);
-                                userPhone.value = formattedPhone;
+                                userPhone.value = formatPhone(userData.phone);
                             } else {
                                 userPhone.value = '';
                             }
@@ -159,7 +157,11 @@
 
         // Função para formatar o telefone
         function formatPhone(phone) {
-            return phone.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
+            // Verifique se o telefone tem o comprimento certo
+            if (phone.length === 11) {
+                return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            }
+            return phone; // Retorna o telefone original se não tiver o comprimento esperado
         }
 
         // Pré-visualização de imagem
@@ -171,74 +173,53 @@
                     userPhoto.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
-
-                // Salvar a imagem no Firebase Storage
-                const storageRef = storage.ref(`user_photos/${file.name}`);
-                storageRef.put(file).then(() => {
-                    // Obter a URL da imagem após o upload
-                    storageRef.getDownloadURL().then((url) => {
-                        // Atualizar a URL da imagem no Firestore
-                        firebase.auth().onAuthStateChanged((user) => {
-                            if (user) {
-                                db.collection('usersweb').doc(user.uid).update({
-                                    photo: url
-                                }).then(() => {
-                                    console.log("Foto de perfil atualizada com sucesso!");
-                                }).catch((error) => {
-                                    console.error("Erro ao atualizar a foto:", error);
-                                });
-                            }
-                        });
-                    });
-                });
             }
         });
 
-        // Mostrar/ocultar senha
-        showPasswordButton.addEventListener('click', () => {
-            const isPasswordVisible = userPassword.type === 'text';
-            userPassword.type = isPasswordVisible ? 'password' : 'text';
-            showPasswordButton.innerHTML = isPasswordVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
-        });
-
-        // Atualizar senha (implementação básica, adicione lógica conforme necessário)
-        updatePasswordButton.addEventListener('click', () => {
-            const newPassword = prompt("Digite a nova senha:");
-            if (newPassword) {
-                firebase.auth().currentUser.updatePassword(newPassword).then(() => {
-                    alert("Senha atualizada com sucesso!");
-                }).catch((error) => {
-                    console.error("Erro ao atualizar a senha:", error);
-                });
-            }
-        });
-
-        // Salvar informações do usuário
+        // Salvar a imagem e informações do usuário
         saveButton.addEventListener('click', () => {
+            const userId = firebase.auth().currentUser.uid;
             const phone = userPhone.value;
 
-            // Validar formato de telefone
-            const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
-            if (!phoneRegex.test(phone)) {
+            if (validatePhone(phone)) {
+                const updatedData = {
+                    phone: phone.replace(/\D/g, ''), // Remover caracteres não numéricos
+                };
+
+                // Salvar no Firestore
+                db.collection('usersweb').doc(userId).update(updatedData)
+                    .then(() => {
+                        alert('Informações salvas com sucesso!');
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao atualizar informações:", error);
+                    });
+            } else {
                 phoneError.classList.remove('hidden');
                 setTimeout(() => {
                     phoneError.classList.add('hidden');
                 }, 2000);
-                return;
             }
+        });
 
-            // Atualizar dados no Firestore
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    db.collection('usersweb').doc(user.uid).update({
-                        phone: phone
-                    }).then(() => {
-                        alert("Informações atualizadas com sucesso!");
-                    }).catch((error) => {
-                        console.error("Erro ao atualizar as informações:", error);
-                    });
-                }
-            });
+        // Função para validar o telefone
+        function validatePhone(phone) {
+            const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+            return phoneRegex.test(phone);
+        }
+
+        // Exibir/ocultar a senha
+        showPasswordButton.addEventListener('click', () => {
+            const inputType = userPassword.type === 'password' ? 'text' : 'password';
+            userPassword.type = inputType;
+            showPasswordButton.querySelector('i').classList.toggle('fa-eye');
+            showPasswordButton.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        // Ação ao clicar no botão de atualizar senha
+        updatePasswordButton.addEventListener('click', () => {
+            // Aqui você pode implementar a lógica de atualização de senha
+            alert('Lógica de atualização de senha não implementada ainda.');
         });
     </script>
 </body>
